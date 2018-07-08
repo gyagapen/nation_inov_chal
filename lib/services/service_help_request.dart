@@ -4,7 +4,7 @@ import '../models/service_provider.dart';
 import '../helpers/constants.dart';
 
 class ServiceHelpRequest {
-  static String serviceBaseUrl = "http://192.168.0.111:8083/mausafe/index.php/";
+  static String serviceBaseUrl = "http://192.168.0.107:8083/mausafe/index.php/";
   static String apiKey = "58eb50e1-f87b-44a7-a4be-dcccd71625eb";
 
   static Map<String, String> generateHeaders() {
@@ -15,15 +15,16 @@ class ServiceHelpRequest {
   }
 
   static void retrieveLiveRequest(deviceId, callback) async {
-    Future<http.Response> resp = http.get(
-        serviceBaseUrl + 'HelpRequest?device_id=' + deviceId,
-        headers: generateHeaders());
-
-    callback(resp);
+    http
+        .get(serviceBaseUrl + 'HelpRequest?device_id=' + deviceId,
+            headers: generateHeaders())
+        .then((response) {
+      callback(response);
+    });
   }
 
   static void initiateHelpRequest(String deviceId, String longitude,
-      String latitude, List<ServiceProvider> providers, callback) {
+      String latitude, List<ServiceProvider> providers, callback) async {
     //build request body
     Map<String, String> bodyRequest = new Map<String, String>();
     bodyRequest["customer_name"] = customerName;
@@ -36,21 +37,24 @@ class ServiceHelpRequest {
 
     String providerStrList = "";
     for (int i = 0; i < providers.length; i++) {
-      providerStrList += providers.elementAt(i).name.toUpperCase() + "|";
+      if (providers[i].isOptional = false) {
+        providerStrList += providers.elementAt(i).name.toUpperCase() + "|";
+      }
     }
 
     //remove last delimiter
-    if (providers.length > 0) {
-      providerStrList = providerStrList.substring(0, providerStrList.length - 2);
+    if (providerStrList != "") {
+      providerStrList =
+          providerStrList.substring(0, providerStrList.length - 1);
     }
 
     bodyRequest["provider_list"] = providerStrList;
 
-    Future<http.Response> resp = http.post(
-        serviceBaseUrl + 'HelpRequest?device_id=' + deviceId,
-        headers: generateHeaders(),
-        body: bodyRequest);
-
-    callback(resp, providers);
+    http
+        .post(serviceBaseUrl + 'HelpRequest/initiate',
+            headers: generateHeaders(), body: bodyRequest)
+        .then((response) {
+      callback(response, providers);
+    });
   }
 }

@@ -1,8 +1,32 @@
 import 'package:flutter/material.dart';
 import '../helpers/open_settings_menu.dart';
+import '../helpers/common.dart';
 import 'dart:async';
 
-Future<Null> showDataConnectionError(context) async {
+Future<Null> showDataConnectionError(context, String errorMsg,
+    [String errorDetails = ""]) async {
+  List<Widget> flatButtons = new List<Widget>();
+
+  if (errorMsg == wsTechnicalError) {
+    flatButtons.add(FlatButton(
+        child: new Text('Turn On Wifi/3G'),
+        onPressed: () {
+          OpenSettings.WirelessMenu();
+          Navigator.of(context).pop();
+        }));
+    flatButtons.add(new FlatButton(
+        child: new Text('Cancel'),
+        onPressed: () {
+          Navigator.of(context).pop();
+        }));
+  } else {
+    flatButtons.add(FlatButton(
+        child: new Text('OK'),
+        onPressed: () {
+          Navigator.of(context).pop();
+        }));
+  }
+
   return showDialog<Null>(
     context: context,
     barrierDismissible: false, // user must tap button!
@@ -12,23 +36,11 @@ Future<Null> showDataConnectionError(context) async {
         content: new SingleChildScrollView(
           child: new ListBody(
             children: <Widget>[
-              new Text('Cannot contact MauSafe servers. Kindly ensure that you are connected to internet'),
+              new Text(errorMsg + errorDetails),
             ],
           ),
         ),
-        actions: <Widget>[
-          new FlatButton(
-              child: new Text('Turn On Wifi/3G'),
-              onPressed: () {
-                OpenSettings.WirelessMenu();
-                Navigator.of(context).pop();
-              }),
-          new FlatButton(
-              child: new Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              }),
-        ],
+        actions: flatButtons,
       );
     },
   );

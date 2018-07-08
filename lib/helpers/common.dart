@@ -7,6 +7,8 @@ import 'package:flutter/services.dart' show PlatformException;
 
 //common variables
 bool isLocationSettingsOpened = false;
+String wsTechnicalError = "Cannot contact MauSafe servers. Kindly ensure that you are connected to internet";
+String wsUserError = "Error while sending request to MauSafe servers. Error Details: ";
 
 var appTitleBar = new Container(
     child: new Row(
@@ -104,6 +106,7 @@ Future<String> getDeviceUID() async {
   final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
   try {
     var build = await deviceInfoPlugin.androidInfo;
+    identifier = build.id;
     deviceName = build.model;
     deviceVersion = build.version.toString();
   } on PlatformException {
@@ -111,5 +114,5 @@ Future<String> getDeviceUID() async {
   }
 
 //if (!mounted) return;
-  return identifier;
+  return identifier+"-"+deviceName;
 }

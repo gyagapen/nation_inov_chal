@@ -49,6 +49,9 @@ class _MyHomePageState extends State<MyHomePage>
   TriggerEvent healthEvent = new TriggerEvent("Health");
   TriggerEvent assaultEvent = new TriggerEvent("Assault");
   TriggerEvent fireEvent = new TriggerEvent("Fireman");
+  TriggerEvent thiefEvent = new TriggerEvent("Thief");
+  TriggerEvent drowningEvent = new TriggerEvent("Drowning");
+  TriggerEvent trackmeEvent = new TriggerEvent("Track me");
 
 //initialise animation
   initState() {
@@ -86,20 +89,35 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   //callback webservice
-  void callbackWsGetExistingHelpReq(Future<http.Response> httpResponse) {
-    httpResponse.then((response) {
+  void callbackWsGetExistingHelpReq(http.Response response) {
+    try {
       if (response.statusCode == 200) {
         Map<String, dynamic> decodedResponse = json.decode(response.body);
         if (decodedResponse["status"] == true) {
           if (decodedResponse["help_details"] == null) {
             print("No pending help request");
+          } else {
+            //open tracking page
+            /*Navigator.push(
+              context,
+              new MaterialPageRoute(
+                builder: (context) =>
+                    new TrackingPage(serviceProviders: serviceProviders),
+              ),
+            );*/
           }
+        } else {
+          //show error dialog
+          showDataConnectionError(
+              context, wsUserError, decodedResponse["error"]);
         }
       } else {
         //show error dialog
-        showDataConnectionError(context);
+        showDataConnectionError(context, wsTechnicalError);
       }
-    });
+    } catch (e) {
+      showDataConnectionError(context, wsTechnicalError);
+    }
 
     setState(() {
       if (_progressHUD != null) {
@@ -151,10 +169,6 @@ class _MyHomePageState extends State<MyHomePage>
 
   //build main widget
   Widget build(BuildContext context) {
-    if (_progressHUD != null) {
-      //_progressHUD.state.show();
-    }
-
     //photo
     var avatarCircle = new Center(
       child: new CircleAvatar(
@@ -192,11 +206,12 @@ class _MyHomePageState extends State<MyHomePage>
       var iconButton = new IconButton(
         //icon: new Icon(sp.iconInfo.iconData),
         icon: ImageIcon(event.icon.iconImage),
-        iconSize: 100.0,
+        iconSize: 65.0,
         color: event.icon.iconColor,
         tooltip: event.name,
         onPressed: () {
           if (_currentLocation != null) {
+            initHelpRequest(event);
           } else {
             //try to get location
             getLocalisation(context);
@@ -219,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage>
     }
 
     var eventButtons = new Container(
-        padding: new EdgeInsets.fromLTRB(5.0, 15.0, 5.0, 5.0),
+        padding: new EdgeInsets.fromLTRB(5.0, 8.0, 5.0, 5.0),
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -228,16 +243,36 @@ class _MyHomePageState extends State<MyHomePage>
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                generateEventIconButton(accidentEvent),
-                generateEventIconButton(healthEvent)
+                new Container(
+                    padding: new EdgeInsets.fromLTRB(0.0, 0.0, 15.0, 0.0),
+                    child: generateEventIconButton(accidentEvent)),
+                new Container(
+                    padding: new EdgeInsets.fromLTRB(15.0, 0.0, 0.0, 0.0),
+                    child: generateEventIconButton(assaultEvent)),
               ],
             ),
             new Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                generateEventIconButton(assaultEvent),
-                generateEventIconButton(fireEvent)
+                generateEventIconButton(thiefEvent),
+                new Container(
+                  padding: new EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                  child: generateEventIconButton(healthEvent),
+                ),
+                generateEventIconButton(drowningEvent),
+              ],
+            ),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                new Container(
+                    padding: new EdgeInsets.fromLTRB(0.0, 0.0, 15.0, 0.0),
+                    child: generateEventIconButton(fireEvent)),
+                new Container(
+                    padding: new EdgeInsets.fromLTRB(15.0, 0.0, 0.0, 0.0),
+                    child: generateEventIconButton(trackmeEvent)),
               ],
             )
           ],
@@ -287,12 +322,16 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void initHelpRequest(TriggerEvent event) {
+    if (_progressHUD != null) {
+      _progressHUD.state.show();
+    }
+
     //initiate help request service
     getDeviceUID().then((uiD) {
       ServiceHelpRequest.initiateHelpRequest(
           uiD,
           myLocation.longitude.toStringAsPrecision(10),
-          myLocation.longitude.toStringAsPrecision(10),
+          myLocation.latitude.toStringAsPrecision(10),
           event.serviceProviders,
           openTrackingPage);
     });
@@ -300,13 +339,36 @@ class _MyHomePageState extends State<MyHomePage>
 
   void openTrackingPage(
       http.Response response, List<ServiceProvider> serviceProviders) {
-    Navigator.push(
-      context,
-      new MaterialPageRoute(
-        builder: (context) =>
-            new TrackingPage(serviceProviders: serviceProviders),
-      ),
-    );
+    try {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> decodedResponse = json.decode(response.body);
+        if (decodedResponse["status"] == true) {
+          print("Help request id" + decodedResponse["id"].toString());
+
+          //switch to patrol view
+          Navigator.push(
+            context,
+            new MaterialPageRoute(
+              builder: (context) =>
+                  new TrackingPage(serviceProviders: serviceProviders),
+            ),
+          );
+        } else {
+          //show error dialog
+          showDataConnectionError(
+              context, wsUserError, decodedResponse["error"]);
+        }
+      } else {
+        //show error dialog
+        showDataConnectionError(context, wsTechnicalError);
+      }
+    } catch (e) {
+      showDataConnectionError(context, wsTechnicalError);
+    }
+
+    if (_progressHUD != null) {
+      _progressHUD.state.dismiss();
+    }
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {

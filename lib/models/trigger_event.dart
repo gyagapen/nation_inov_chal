@@ -42,7 +42,26 @@ class TriggerEvent {
         serviceProviders.add(new ServiceProvider("Police"));
         serviceProviders.add(new ServiceProvider("SAMU", true));
         break;
-    }
+      case "Thief":
+        icon.iconImage = new AssetImage("images/thief.png");
+        icon.iconColor = Colors.indigo[500];
 
+        serviceProviders.add(new ServiceProvider("Police"));
+        serviceProviders.add(new ServiceProvider("SAMU", true));
+        break;
+      case "Drowning":
+        icon.iconImage = new AssetImage("images/drowning.png");
+        icon.iconColor = Colors.cyan[500];
+
+        serviceProviders.add(new ServiceProvider("Police"));
+        serviceProviders.add(new ServiceProvider("Coast Guard"));
+        break;
+      case "Track me":
+        icon.iconImage = new AssetImage("images/track_me.png");
+        icon.iconColor = Colors.lightGreen[500];
+
+        serviceProviders.add(new ServiceProvider("Police"));
+        break;
+    }
   }
 }
