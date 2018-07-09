@@ -20,6 +20,8 @@ class ServiceHelpRequest {
             headers: generateHeaders())
         .then((response) {
       callback(response);
+    }).catchError((e) {
+      callback(null);
     });
   }
 
@@ -55,6 +57,8 @@ class ServiceHelpRequest {
             headers: generateHeaders(), body: bodyRequest)
         .then((response) {
       callback(response, providers);
+    }).catchError((e) {
+      callback(null, providers);
     });
   }
 }

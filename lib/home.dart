@@ -77,10 +77,15 @@ class _MyHomePageState extends State<MyHomePage>
     _progressHUD = new ProgressHUD(
         backgroundColor: Colors.black54,
         color: Colors.white,
-        containerColor: Colors.red,
+        containerColor: Colors.red[900],
         borderRadius: 5.0,
         text: 'Loading...');
 
+        getPendingHelpRequestFromServer();
+  }
+
+  //get live request details
+  void getPendingHelpRequestFromServer() {
     //call webservice to check if any live request
     getDeviceUID().then((uiD) {
       ServiceHelpRequest.retrieveLiveRequest(
@@ -97,6 +102,9 @@ class _MyHomePageState extends State<MyHomePage>
           if (decodedResponse["help_details"] == null) {
             print("No pending help request");
           } else {
+            //build service providers as
+            print(decodedResponse["help_details"]["requested_providers"]);
+
             //open tracking page
             /*Navigator.push(
               context,
@@ -353,6 +361,10 @@ class _MyHomePageState extends State<MyHomePage>
                   new TrackingPage(serviceProviders: serviceProviders),
             ),
           );
+
+          //getPendingHelpRequestFromServer();
+
+
         } else {
           //show error dialog
           showDataConnectionError(

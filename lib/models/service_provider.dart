@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:map_view/map_view.dart';
 import 'custom_location.dart';
 
-
 class ServiceProvider {
   String uid = "";
   String name = "";
@@ -81,4 +80,3 @@ class ServiceProviderIcon {
   Color highlightColor1 = Colors.black;
   Color highlightColor2 = Colors.black;
 }
-
