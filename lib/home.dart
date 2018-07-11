@@ -175,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage>
         showDataConnectionError(context, wsTechnicalError);
       }
     } catch (e) {
-      showDataConnectionError(context, wsTechnicalError);
+      showDataConnectionError(context, wsTechnicalError+": "+e.toString());
     }
 
     setState(() {
@@ -403,16 +403,6 @@ class _MyHomePageState extends State<MyHomePage>
       if (response.statusCode == 200) {
         Map<String, dynamic> decodedResponse = json.decode(response.body);
         if (decodedResponse["status"] == true) {
-          print("Help request id" + decodedResponse["id"].toString());
-
-          //switch to patrol view
-          /*Navigator.push(
-            context,
-            new MaterialPageRoute(
-              builder: (context) =>
-                  new TrackingPage(serviceProviders: serviceProviders),
-            ),
-          );*/
 
           getPendingHelpRequestFromServer();
         } else {
@@ -425,7 +415,7 @@ class _MyHomePageState extends State<MyHomePage>
         showDataConnectionError(context, wsTechnicalError);
       }
     } catch (e) {
-      showDataConnectionError(context, wsTechnicalError);
+      showDataConnectionError(context, wsTechnicalError+": "+e.toString());
     }
 
     if (_progressHUD != null) {

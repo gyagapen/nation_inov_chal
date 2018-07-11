@@ -6,6 +6,11 @@ import 'helpers/mapview.dart';
 import 'dialogs/cancel_sprequest_dialog.dart';
 import 'models/service_provider.dart';
 import 'models/help_request.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dialogs/dialog_error_webservice.dart';
+import 'package:progress_hud/progress_hud.dart';
+import 'services/service_help_request.dart';
 
 class TrackingPage extends StatefulWidget {
   TrackingPage({Key key, this.serviceProviders, this.helpRequest})
@@ -30,6 +35,8 @@ class _TrackingPageState extends State<TrackingPage>
   List<Widget> spCards;
   ListView mainColumn;
 
+  ProgressHUD _progressHUD;
+
 //initialise animation
   initState() {
     super.initState();
@@ -45,12 +52,21 @@ class _TrackingPageState extends State<TrackingPage>
         UpdateServiceProviderStatus(sp, receiveServiceProviderStatusUpdate);
       }
     }
+
+    //initiate progress hud
+    _progressHUD = new ProgressHUD(
+        backgroundColor: Colors.black54,
+        color: Colors.white,
+        containerColor: Colors.red[900],
+        borderRadius: 5.0,
+        text: 'Loading...');
   }
 
   Widget build(BuildContext context) {
     void openTrackingGpsMap() {
       //show map
-      trackingMap = new TrackingMap(widget.serviceProviders, widget.helpRequest, context);
+      trackingMap =
+          new TrackingMap(widget.serviceProviders, widget.helpRequest, context);
       trackingMap.showMap();
     }
 
@@ -132,7 +148,7 @@ class _TrackingPageState extends State<TrackingPage>
             disabledColor: Colors.black,
             child: new Text("Cancel".toUpperCase()),
             onPressed: () {
-              showCancelSPRequestDialog(context);
+              showCancelSPRequestDialog(context, callCancelHelpRequestWs);
             },
           ),
         ),
@@ -213,6 +229,41 @@ class _TrackingPageState extends State<TrackingPage>
     }
 
     return trackingButtonEnabled;
+  }
+
+  //call web service to perform cancellation of help request
+  void callCancelHelpRequestWs() {
+    if (_progressHUD != null) {
+      //_progressHUD.state.show();
+    }
+
+    ServiceHelpRequest.cancelHelpReauest(
+        widget.helpRequest.id, cancelWsCallback);
+  }
+
+  void cancelWsCallback(http.Response response) {
+    try {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> decodedResponse = json.decode(response.body);
+        if (decodedResponse["status"] == true) {
+          //pop back
+          Navigator.popUntil(context, ModalRoute.withName('/'));
+        } else {
+          //show error dialog
+          showDataConnectionError(
+              context, wsUserError, decodedResponse["error"]);
+        }
+      } else {
+        //show error dialog
+        showDataConnectionError(context, wsTechnicalError);
+      }
+    } catch (e) {
+      showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
+    }
+
+    /*if (_progressHUD != null) {
+      _progressHUD.state.dismiss();
+    }*/
   }
 
   /****** Handle activity states **********/
