@@ -44,7 +44,7 @@ void UpdateServiceProviderStatus(
     ServiceProvider sp, callback(ServiceProvider newSp)) async {
   await new Future.delayed(const Duration(seconds: 5)).then((_) {
     sp.status.value = 1;
-    sp.status.estTimeArrival = 15;
+    sp.status.estTimeArrival = "15m";
     switch (sp.name) {
       case "Police":
         sp.uid = "2";

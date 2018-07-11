@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-Future<Null> showCancelSPRequestDialog(
-    BuildContext context) async {
+Future<Null> showCancelSPRequestDialog(BuildContext context) async {
   return showDialog<Null>(
     context: context,
     barrierDismissible: false, // user must tap button!
@@ -20,7 +19,7 @@ Future<Null> showCancelSPRequestDialog(
           new FlatButton(
               child: new Text('Yes'),
               onPressed: () {
-                Navigator.popUntil(context,ModalRoute.withName('/'));
+                Navigator.popUntil(context, ModalRoute.withName('/'));
               }),
           new FlatButton(
               child: new Text('No'),

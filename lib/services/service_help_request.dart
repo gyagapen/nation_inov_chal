@@ -4,7 +4,7 @@ import '../models/service_provider.dart';
 import '../helpers/constants.dart';
 
 class ServiceHelpRequest {
-  static String serviceBaseUrl = "http://192.168.0.107:8083/mausafe/index.php/";
+  static String serviceBaseUrl = "http://192.168.0.105:8083/mausafe/index.php/";
   static String apiKey = "58eb50e1-f87b-44a7-a4be-dcccd71625eb";
 
   static Map<String, String> generateHeaders() {
@@ -25,8 +25,28 @@ class ServiceHelpRequest {
     });
   }
 
-  static void initiateHelpRequest(String deviceId, String longitude,
-      String latitude, List<ServiceProvider> providers, callback) async {
+  static void cancelHelpReauest(String helpRequestId, callback) async {
+    Map<String, String> bodyRequest = new Map<String, String>();
+
+    bodyRequest["request_id"] = helpRequestId;
+
+    http
+        .post(serviceBaseUrl + 'HelpRequest/cancel',
+            headers: generateHeaders(), body: bodyRequest)
+        .then((response) {
+      callback(response);
+    }).catchError((e) {
+      callback(null);
+    });
+  }
+
+  static void initiateHelpRequest(
+      String deviceId,
+      String longitude,
+      String latitude,
+      List<ServiceProvider> providers,
+      String eventType,
+      callback) async {
     //build request body
     Map<String, String> bodyRequest = new Map<String, String>();
     bodyRequest["customer_name"] = customerName;
@@ -36,10 +56,11 @@ class ServiceHelpRequest {
     bodyRequest["device_id"] = deviceId;
     bodyRequest["longitude"] = longitude;
     bodyRequest["latitude"] = latitude;
+    bodyRequest["event_type"] = eventType;
 
     String providerStrList = "";
     for (int i = 0; i < providers.length; i++) {
-      if (providers[i].isOptional = false) {
+      if (providers.elementAt(i).isOptional == false) {
         providerStrList += providers.elementAt(i).name.toUpperCase() + "|";
       }
     }

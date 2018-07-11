@@ -4,7 +4,8 @@ import 'package:map_view/map_view.dart';
 import 'constants.dart';
 import 'common.dart';
 import 'dart:async';
-import '../models/service_provider.dart'; 
+import '../models/service_provider.dart';
+import '../models/help_request.dart';
 
 class TrackingMap {
   MapView mapView = new MapView();
@@ -12,14 +13,17 @@ class TrackingMap {
 
   Location myCurrentLocation;
   var compositeSubscription = new TrackingCompositeSubscription();
-  int _spETA = 15;
+  String _spETA = "";
 
   List<ServiceProvider> serviceProviders;
+  HelpRequest helpRequest;
   List<Timer> timers;
   BuildContext parentContext;
 
-  TrackingMap(List<ServiceProvider> serviceProviders, BuildContext context) {
+  TrackingMap(List<ServiceProvider> serviceProviders, HelpRequest helpRequest,
+      BuildContext context) {
     this.serviceProviders = serviceProviders;
+    this.helpRequest = helpRequest;
     timers = new List<Timer>();
 
     this.parentContext = context;
@@ -132,14 +136,13 @@ class TrackingMap {
   handleDismiss() async {
     print("handle dismiss triggered");
 
-      //cancel all timers
-      for (var t in timers) {
-        t.cancel();
-      }
+    //cancel all timers
+    for (var t in timers) {
+      t.cancel();
+    }
 
-      mapView.dismiss();
-      compositeSubscription.cancel();
-    
+    mapView.dismiss();
+    compositeSubscription.cancel();
   }
 }
 

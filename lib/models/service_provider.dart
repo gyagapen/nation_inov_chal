@@ -53,7 +53,10 @@ class ServiceProviderStatus {
   int value = 0;
 
   //ETA in minutes
-  int estTimeArrival = 0;
+  String estTimeArrival = "";
+
+  //distance in km
+  String distanceKm = "";
 
   String getStatusText() {
     String descText = "";
@@ -71,6 +74,17 @@ class ServiceProviderStatus {
     }
 
     return descText;
+  }
+
+  void setStatusFromWs(String wsStatus) {
+    switch (wsStatus) {
+      case "TRANSIT":
+        this.value = 1;
+        break;
+      case "ARRIVED":
+        this.value = 2;
+        break;
+    }
   }
 }
 

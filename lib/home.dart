@@ -15,6 +15,8 @@ import 'dart:convert';
 import 'dialogs/dialog_error_webservice.dart';
 import 'models/trigger_event.dart';
 import 'models/service_provider.dart';
+import 'models/help_request.dart';
+import 'models/assignment_details.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -81,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage>
         borderRadius: 5.0,
         text: 'Loading...');
 
-        getPendingHelpRequestFromServer();
+    getPendingHelpRequestFromServer();
   }
 
   //get live request details
@@ -103,16 +105,65 @@ class _MyHomePageState extends State<MyHomePage>
             print("No pending help request");
           } else {
             //build service providers as
-            print(decodedResponse["help_details"]["requested_providers"]);
+
+            HelpRequest helpRequest =
+                HelpRequest.fromJson(decodedResponse["help_details"]);
+
+            List<AssignmentDetails> assignmentDetails =
+                new List<AssignmentDetails>();
+            if (decodedResponse["assignment_details"] != null) {
+              for (var assignment in decodedResponse["assignment_details"]) {
+                assignmentDetails.add(AssignmentDetails.fromJson(assignment));
+              }
+            }
+
+            //merge service providers
+            TriggerEvent helpRequestEvent = new TriggerEvent(helpRequest.eventType);
+            List<ServiceProvider> serviceProviders =
+                helpRequestEvent.serviceProviders;
+            for (int i = 0; i < serviceProviders.length; i++) {
+              //determine wheter it's optional
+              if (helpRequest.requestedServiceProviders
+                  .contains(serviceProviders.elementAt(i).name)) {
+                serviceProviders.elementAt(i).isOptional = false;
+              }
+
+              //update assignment details
+              for (var assignmentItem in assignmentDetails) {
+                //match service provider
+                if (assignmentItem.serviceProviderType.toUpperCase() ==
+                    serviceProviders.elementAt(i).name.toUpperCase()) {
+                  //update details
+                  serviceProviders
+                      .elementAt(i)
+                      .status
+                      .setStatusFromWs(assignmentItem.status);
+
+                  serviceProviders.elementAt(i).status.estTimeArrival =
+                      assignmentItem.etaMin;
+
+                  serviceProviders.elementAt(i).status.distanceKm =
+                      assignmentItem.distanceKm;
+
+                  serviceProviders.elementAt(i).location.latitude =
+                      double.parse(assignmentItem.latitude);
+
+                  serviceProviders.elementAt(i).location.longitude =
+                      double.parse(assignmentItem.longitude);
+                }
+              }
+            }
 
             //open tracking page
-            /*Navigator.push(
+            Navigator.push(
               context,
               new MaterialPageRoute(
-                builder: (context) =>
-                    new TrackingPage(serviceProviders: serviceProviders),
+                builder: (context) => new TrackingPage(
+                      serviceProviders: serviceProviders,
+                      helpRequest: helpRequest,
+                    ),
               ),
-            );*/
+            );
           }
         } else {
           //show error dialog
@@ -341,6 +392,7 @@ class _MyHomePageState extends State<MyHomePage>
           myLocation.longitude.toStringAsPrecision(10),
           myLocation.latitude.toStringAsPrecision(10),
           event.serviceProviders,
+          event.name,
           openTrackingPage);
     });
   }
@@ -354,17 +406,15 @@ class _MyHomePageState extends State<MyHomePage>
           print("Help request id" + decodedResponse["id"].toString());
 
           //switch to patrol view
-          Navigator.push(
+          /*Navigator.push(
             context,
             new MaterialPageRoute(
               builder: (context) =>
                   new TrackingPage(serviceProviders: serviceProviders),
             ),
-          );
+          );*/
 
-          //getPendingHelpRequestFromServer();
-
-
+          getPendingHelpRequestFromServer();
         } else {
           //show error dialog
           showDataConnectionError(

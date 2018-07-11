@@ -5,11 +5,14 @@ import 'helpers/common.dart';
 import 'helpers/mapview.dart';
 import 'dialogs/cancel_sprequest_dialog.dart';
 import 'models/service_provider.dart';
+import 'models/help_request.dart';
 
 class TrackingPage extends StatefulWidget {
-  TrackingPage({Key key, this.serviceProviders}) : super(key: key);
+  TrackingPage({Key key, this.serviceProviders, this.helpRequest})
+      : super(key: key);
 
   final List<ServiceProvider> serviceProviders;
+  final HelpRequest helpRequest;
   _TrackingPageState createState() => new _TrackingPageState();
 }
 
@@ -47,7 +50,7 @@ class _TrackingPageState extends State<TrackingPage>
   Widget build(BuildContext context) {
     void openTrackingGpsMap() {
       //show map
-      trackingMap = new TrackingMap(widget.serviceProviders, context);
+      trackingMap = new TrackingMap(widget.serviceProviders, widget.helpRequest, context);
       trackingMap.showMap();
     }
 
