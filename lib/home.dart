@@ -17,6 +17,7 @@ import 'models/trigger_event.dart';
 import 'models/service_provider.dart';
 import 'models/help_request.dart';
 import 'models/assignment_details.dart';
+import 'helpers/webservice_wrappers.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -41,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage>
   bool _isWitness = false;
   var _currentLocation = <String, double>{};
   ProgressHUD _progressHUD;
-  bool _showProgressBar = true;
+  bool _dataConnectionAvailable = true;
 
   AnimationController controller;
   Animation<double> animation;
@@ -58,8 +59,6 @@ class _MyHomePageState extends State<MyHomePage>
 //initialise animation
   initState() {
     super.initState();
-
-    getLocalisation(context);
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -88,94 +87,44 @@ class _MyHomePageState extends State<MyHomePage>
 
   //get live request details
   void getPendingHelpRequestFromServer() {
-    //call webservice to check if any live request
-    getDeviceUID().then((uiD) {
-      ServiceHelpRequest.retrieveLiveRequest(
-          uiD.toString(), callbackWsGetExistingHelpReq);
-    });
+    /*if (_progressHUD != null) {
+      _progressHUD.state.show();
+    }*/
+
+    WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
   }
 
-  //callback webservice
-  void callbackWsGetExistingHelpReq(http.Response response) {
-    try {
-      if (response.statusCode == 200) {
-        Map<String, dynamic> decodedResponse = json.decode(response.body);
-        if (decodedResponse["status"] == true) {
-          if (decodedResponse["help_details"] == null) {
-            print("No pending help request");
-          } else {
-            //build service providers as
+  void callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
+    if (e == null) {
+      setState(() {
+        _dataConnectionAvailable = true;
+      });
 
-            HelpRequest helpRequest =
-                HelpRequest.fromJson(decodedResponse["help_details"]);
-
-            List<AssignmentDetails> assignmentDetails =
-                new List<AssignmentDetails>();
-            if (decodedResponse["assignment_details"] != null) {
-              for (var assignment in decodedResponse["assignment_details"]) {
-                assignmentDetails.add(AssignmentDetails.fromJson(assignment));
-              }
-            }
-
-            //merge service providers
-            TriggerEvent helpRequestEvent = new TriggerEvent(helpRequest.eventType);
-            List<ServiceProvider> serviceProviders =
-                helpRequestEvent.serviceProviders;
-            for (int i = 0; i < serviceProviders.length; i++) {
-              //determine wheter it's optional
-              if (helpRequest.requestedServiceProviders
-                  .contains(serviceProviders.elementAt(i).name)) {
-                serviceProviders.elementAt(i).isOptional = false;
-              }
-
-              //update assignment details
-              for (var assignmentItem in assignmentDetails) {
-                //match service provider
-                if (assignmentItem.serviceProviderType.toUpperCase() ==
-                    serviceProviders.elementAt(i).name.toUpperCase()) {
-                  //update details
-                  serviceProviders
-                      .elementAt(i)
-                      .status
-                      .setStatusFromWs(assignmentItem.status);
-
-                  serviceProviders.elementAt(i).status.estTimeArrival =
-                      assignmentItem.etaMin;
-
-                  serviceProviders.elementAt(i).status.distanceKm =
-                      assignmentItem.distanceKm;
-
-                  serviceProviders.elementAt(i).location.latitude =
-                      double.parse(assignmentItem.latitude);
-
-                  serviceProviders.elementAt(i).location.longitude =
-                      double.parse(assignmentItem.longitude);
-                }
-              }
-            }
-
-            //open tracking page
-            Navigator.push(
-              context,
-              new MaterialPageRoute(
-                builder: (context) => new TrackingPage(
-                      serviceProviders: serviceProviders,
-                      helpRequest: helpRequest,
-                    ),
-              ),
-            );
-          }
-        } else {
-          //show error dialog
-          showDataConnectionError(
-              context, wsUserError, decodedResponse["error"]);
-        }
+      if (helpRequest != null) {
+        //open tracking page
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new TrackingPage(
+                  helpRequest: helpRequest,
+                ),
+          ),
+        );
       } else {
-        //show error dialog
-        showDataConnectionError(context, wsTechnicalError);
+        getLocalisation(context);
       }
-    } catch (e) {
-      showDataConnectionError(context, wsTechnicalError+": "+e.toString());
+    } else {
+      if (e.toString().startsWith(wsUserError)) {
+        showDataConnectionError(
+            context, wsUserError, e.toString().split("|").elementAt(1));
+      } else {
+        showDataConnectionError(
+            context, wsTechnicalError + ": " + e.toString());
+
+        setState(() {
+          _dataConnectionAvailable = false;
+        });
+      }
     }
 
     setState(() {
@@ -344,6 +293,40 @@ class _MyHomePageState extends State<MyHomePage>
       ),
     );
 
+    var mainPageContentWrapper = new Column(
+      children: [
+        nameHeader,
+        AnimatedGPSStatus(
+          animation: animation,
+        ),
+        contentBody,
+        eventButtons,
+      ],
+    );
+
+    var dataErrorRetryWrapper = new Column(
+      children: [
+        nameHeader,
+        new Container(
+          padding: new EdgeInsets.fromLTRB(5.0, 150.0, 5.0, 5.0),
+          child: new Text(
+            "Error while contacting Mausafe servers",
+            style: new TextStyle(
+                color: Colors.red[900], fontWeight: FontWeight.bold),
+          ),
+        ),
+        new Container(
+          padding: new EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 5.0),
+          child: new RaisedButton(
+            child: new Text("Retry"),
+            onPressed: () {
+              getPendingHelpRequestFromServer();
+            },
+          ),
+        )
+      ],
+    );
+
     return new Scaffold(
       appBar: new AppBar(
           // Here we take the value from the MyHomePage object that was created by
@@ -351,26 +334,13 @@ class _MyHomePageState extends State<MyHomePage>
           title: appTitleBar),
       body: new Stack(
         children: [
-          new Column(
-            children: [
-              nameHeader,
-              AnimatedGPSStatus(
-                animation: animation,
-              ),
-              contentBody,
-              eventButtons,
-            ],
-          ),
+          _dataConnectionAvailable
+              ? mainPageContentWrapper
+              : dataErrorRetryWrapper,
           _progressHUD,
         ],
       ),
-
       drawer: buildDrawer(context),
-      /*floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ),*/ // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
@@ -381,10 +351,6 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void initHelpRequest(TriggerEvent event) {
-    if (_progressHUD != null) {
-      _progressHUD.state.show();
-    }
-
     //initiate help request service
     getDeviceUID().then((uiD) {
       ServiceHelpRequest.initiateHelpRequest(
@@ -400,10 +366,12 @@ class _MyHomePageState extends State<MyHomePage>
   void openTrackingPage(
       http.Response response, List<ServiceProvider> serviceProviders) {
     try {
+      if (_progressHUD != null) {
+        _progressHUD.state.show();
+      }
       if (response.statusCode == 200) {
         Map<String, dynamic> decodedResponse = json.decode(response.body);
         if (decodedResponse["status"] == true) {
-
           getPendingHelpRequestFromServer();
         } else {
           //show error dialog
@@ -415,12 +383,9 @@ class _MyHomePageState extends State<MyHomePage>
         showDataConnectionError(context, wsTechnicalError);
       }
     } catch (e) {
-      showDataConnectionError(context, wsTechnicalError+": "+e.toString());
+      showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
     }
 
-    if (_progressHUD != null) {
-      _progressHUD.state.dismiss();
-    }
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {

@@ -14,15 +14,9 @@ class ServiceHelpRequest {
     return headers;
   }
 
-  static void retrieveLiveRequest(deviceId, callback) async {
-    http
-        .get(serviceBaseUrl + 'HelpRequest?device_id=' + deviceId,
-            headers: generateHeaders())
-        .then((response) {
-      callback(response);
-    }).catchError((e) {
-      callback(null);
-    });
+  static Future<http.Response> retrieveLiveRequest(deviceId) async {
+    return http.get(serviceBaseUrl + 'HelpRequest?device_id=' + deviceId,
+        headers: generateHeaders());
   }
 
   static void cancelHelpReauest(String helpRequestId, callback) async {

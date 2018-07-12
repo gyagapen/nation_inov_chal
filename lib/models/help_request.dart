@@ -1,4 +1,5 @@
 import 'assignment_details.dart';
+import 'service_provider.dart';
 
 class HelpRequest {
   String id;
@@ -13,6 +14,7 @@ class HelpRequest {
   String eventType;
   List<AssignmentDetails> assignments;
   List<String> requestedServiceProviders;
+  List<ServiceProvider> serviceProviderObjects = new List<ServiceProvider>();
 
   HelpRequest(
       {this.id,

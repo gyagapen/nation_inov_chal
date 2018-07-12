@@ -13,10 +13,9 @@ import 'package:progress_hud/progress_hud.dart';
 import 'services/service_help_request.dart';
 
 class TrackingPage extends StatefulWidget {
-  TrackingPage({Key key, this.serviceProviders, this.helpRequest})
+  TrackingPage({Key key, this.helpRequest})
       : super(key: key);
 
-  final List<ServiceProvider> serviceProviders;
   final HelpRequest helpRequest;
   _TrackingPageState createState() => new _TrackingPageState();
 }
@@ -47,7 +46,7 @@ class _TrackingPageState extends State<TrackingPage>
     WidgetsBinding.instance.addObserver(this);
 
     //contact each service provider
-    for (var sp in widget.serviceProviders) {
+    for (var sp in widget.helpRequest.serviceProviderObjects) {
       if (!sp.isOptional) {
         UpdateServiceProviderStatus(sp, receiveServiceProviderStatusUpdate);
       }
@@ -66,7 +65,7 @@ class _TrackingPageState extends State<TrackingPage>
     void openTrackingGpsMap() {
       //show map
       trackingMap =
-          new TrackingMap(widget.serviceProviders, widget.helpRequest, context);
+          new TrackingMap(widget.helpRequest.serviceProviderObjects, widget.helpRequest, context);
       trackingMap.showMap();
     }
 
@@ -106,7 +105,7 @@ class _TrackingPageState extends State<TrackingPage>
     List<Widget> buildListOfSpCards() {
       spCards = new List<Widget>();
 
-      for (var sp in widget.serviceProviders) {
+      for (var sp in widget.helpRequest.serviceProviderObjects) {
         if (!sp.isOptional) {
           spCards.add(generateSpCard(sp));
         } else {
@@ -162,10 +161,15 @@ class _TrackingPageState extends State<TrackingPage>
 
     return new Scaffold(
       appBar: new AppBar(title: appTitleBar),
-      body: new Center(
-        child: new Container(
-            margin: new EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 5.0),
-            child: mainColumn),
+      body: new Stack(
+        children: [
+          _progressHUD,
+          new Center(
+            child: new Container(
+                margin: new EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 5.0),
+                child: mainColumn),
+          ),
+        ],
       ),
       persistentFooterButtons: [actionButtons],
     );
@@ -208,7 +212,7 @@ class _TrackingPageState extends State<TrackingPage>
   void receiveServiceProviderStatusUpdate(ServiceProvider newSp) {
     setState(() {
       //update status and uid
-      for (var sp in widget.serviceProviders) {
+      for (var sp in widget.helpRequest.serviceProviderObjects) {
         if (sp.name == newSp.name) {
           setState(() {
             sp.uid = newSp.uid;
@@ -222,7 +226,7 @@ class _TrackingPageState extends State<TrackingPage>
   bool trackingButtonIsEnabled() {
     bool trackingButtonEnabled = false;
 
-    for (var sp in widget.serviceProviders) {
+    for (var sp in widget.helpRequest.serviceProviderObjects) {
       if ((sp.name != "Police") && (sp.status.value == 1)) {
         trackingButtonEnabled = true;
       }
@@ -234,7 +238,7 @@ class _TrackingPageState extends State<TrackingPage>
   //call web service to perform cancellation of help request
   void callCancelHelpRequestWs() {
     if (_progressHUD != null) {
-      //_progressHUD.state.show();
+      _progressHUD.state.show();
     }
 
     ServiceHelpRequest.cancelHelpReauest(
@@ -261,9 +265,9 @@ class _TrackingPageState extends State<TrackingPage>
       showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
     }
 
-    /*if (_progressHUD != null) {
+    if (_progressHUD != null) {
       _progressHUD.state.dismiss();
-    }*/
+    }
   }
 
   /****** Handle activity states **********/
