@@ -13,8 +13,7 @@ import 'package:progress_hud/progress_hud.dart';
 import 'services/service_help_request.dart';
 
 class TrackingPage extends StatefulWidget {
-  TrackingPage({Key key, this.helpRequest})
-      : super(key: key);
+  TrackingPage({Key key, this.helpRequest}) : super(key: key);
 
   final HelpRequest helpRequest;
   _TrackingPageState createState() => new _TrackingPageState();
@@ -58,14 +57,18 @@ class _TrackingPageState extends State<TrackingPage>
         color: Colors.white,
         containerColor: Colors.red[900],
         borderRadius: 5.0,
-        text: 'Loading...');
+        text: 'Loading... ');
   }
 
   Widget build(BuildContext context) {
+    if (_progressHUD.state != null) {
+      _progressHUD.state.dismiss();
+    }
+
     void openTrackingGpsMap() {
       //show map
-      trackingMap =
-          new TrackingMap(widget.helpRequest.serviceProviderObjects, widget.helpRequest, context);
+      trackingMap = new TrackingMap(widget.helpRequest.serviceProviderObjects,
+          widget.helpRequest, context);
       trackingMap.showMap();
     }
 
@@ -163,12 +166,12 @@ class _TrackingPageState extends State<TrackingPage>
       appBar: new AppBar(title: appTitleBar),
       body: new Stack(
         children: [
-          _progressHUD,
           new Center(
             child: new Container(
                 margin: new EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 5.0),
                 child: mainColumn),
           ),
+          _progressHUD,
         ],
       ),
       persistentFooterButtons: [actionButtons],
@@ -237,7 +240,7 @@ class _TrackingPageState extends State<TrackingPage>
 
   //call web service to perform cancellation of help request
   void callCancelHelpRequestWs() {
-    if (_progressHUD != null) {
+    if (_progressHUD.state != null) {
       _progressHUD.state.show();
     }
 
@@ -247,6 +250,9 @@ class _TrackingPageState extends State<TrackingPage>
 
   void cancelWsCallback(http.Response response) {
     try {
+      if (_progressHUD.state != null) {
+        _progressHUD.state.dismiss();
+      }
       if (response.statusCode == 200) {
         Map<String, dynamic> decodedResponse = json.decode(response.body);
         if (decodedResponse["status"] == true) {
@@ -263,10 +269,6 @@ class _TrackingPageState extends State<TrackingPage>
       }
     } catch (e) {
       showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
-    }
-
-    if (_progressHUD != null) {
-      _progressHUD.state.dismiss();
     }
   }
 

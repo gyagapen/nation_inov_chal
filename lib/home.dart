@@ -82,19 +82,22 @@ class _MyHomePageState extends State<MyHomePage>
         borderRadius: 5.0,
         text: 'Loading...');
 
+    if ((_progressHUD.state != null)) {
+      _progressHUD.state.show();
+    }
     getPendingHelpRequestFromServer();
   }
 
   //get live request details
   void getPendingHelpRequestFromServer() {
-    /*if (_progressHUD != null) {
-      _progressHUD.state.show();
-    }*/
-
     WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
   }
 
   void callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
+    if (_progressHUD.state != null) {
+      _progressHUD.state.dismiss();
+    }
+
     if (e == null) {
       setState(() {
         _dataConnectionAvailable = true;
@@ -126,12 +129,6 @@ class _MyHomePageState extends State<MyHomePage>
         });
       }
     }
-
-    setState(() {
-      if (_progressHUD != null) {
-        _progressHUD.state.dismiss();
-      }
-    });
   }
 
   void _toggleWitness() {
@@ -351,6 +348,10 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void initHelpRequest(TriggerEvent event) {
+    if (_progressHUD.state != null) {
+      _progressHUD.state.show();
+    }
+
     //initiate help request service
     getDeviceUID().then((uiD) {
       ServiceHelpRequest.initiateHelpRequest(
@@ -366,9 +367,6 @@ class _MyHomePageState extends State<MyHomePage>
   void openTrackingPage(
       http.Response response, List<ServiceProvider> serviceProviders) {
     try {
-      if (_progressHUD != null) {
-        _progressHUD.state.show();
-      }
       if (response.statusCode == 200) {
         Map<String, dynamic> decodedResponse = json.decode(response.body);
         if (decodedResponse["status"] == true) {
@@ -385,7 +383,6 @@ class _MyHomePageState extends State<MyHomePage>
     } catch (e) {
       showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
     }
-
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
