@@ -8,9 +8,12 @@ import 'models/service_provider.dart';
 import 'models/help_request.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
 import 'dialogs/dialog_error_webservice.dart';
 import 'package:progress_hud/progress_hud.dart';
 import 'services/service_help_request.dart';
+import 'helpers/webservice_wrappers.dart';
+import 'helpers/constants.dart';
 
 class TrackingPage extends StatefulWidget {
   TrackingPage({Key key, this.helpRequest}) : super(key: key);
@@ -35,6 +38,10 @@ class _TrackingPageState extends State<TrackingPage>
 
   ProgressHUD _progressHUD;
 
+  List<ServiceProvider> serviceProviders = new List<ServiceProvider>();
+
+  Timer updateStatusTimer;
+
 //initialise animation
   initState() {
     super.initState();
@@ -44,31 +51,27 @@ class _TrackingPageState extends State<TrackingPage>
 
     WidgetsBinding.instance.addObserver(this);
 
-    //contact each service provider
-    for (var sp in widget.helpRequest.serviceProviderObjects) {
-      if (!sp.isOptional) {
-        UpdateServiceProviderStatus(sp, receiveServiceProviderStatusUpdate);
-      }
-    }
+    serviceProviders = widget.helpRequest.serviceProviderObjects;
+
+    updateStatusTimer = Timer.periodic(
+        updateStatusRefreshSec, (Timer t) => getPendingHelpRequestFromServer());
 
     //initiate progress hud
     _progressHUD = new ProgressHUD(
-        backgroundColor: Colors.black54,
-        color: Colors.white,
-        containerColor: Colors.red[900],
-        borderRadius: 5.0,
-        text: 'Loading... ');
+      backgroundColor: Colors.black54,
+      color: Colors.white,
+      containerColor: Colors.red[900],
+      borderRadius: 5.0,
+      text: 'Loading...',
+      loading: false,
+    );
   }
 
   Widget build(BuildContext context) {
-    if (_progressHUD.state != null) {
-      _progressHUD.state.dismiss();
-    }
-
     void openTrackingGpsMap() {
       //show map
-      trackingMap = new TrackingMap(widget.helpRequest.serviceProviderObjects,
-          widget.helpRequest, context);
+      trackingMap =
+          new TrackingMap(serviceProviders, widget.helpRequest, context);
       trackingMap.showMap();
     }
 
@@ -108,7 +111,7 @@ class _TrackingPageState extends State<TrackingPage>
     List<Widget> buildListOfSpCards() {
       spCards = new List<Widget>();
 
-      for (var sp in widget.helpRequest.serviceProviderObjects) {
+      for (var sp in serviceProviders) {
         if (!sp.isOptional) {
           spCards.add(generateSpCard(sp));
         } else {
@@ -118,11 +121,7 @@ class _TrackingPageState extends State<TrackingPage>
               textColor: Colors.red,
               child: new Text("Click here to call " + sp.name),
               onPressed: () {
-                setState(() {
-                  UpdateServiceProviderStatus(
-                      sp, receiveServiceProviderStatusUpdate);
-                  sp.isOptional = false;
-                });
+                addSPHelpRequestWs(sp.name);
               },
             ),
           ));
@@ -161,6 +160,10 @@ class _TrackingPageState extends State<TrackingPage>
     mainColumn = ListView(
       children: buildListOfSpCards(),
     );
+
+    if (_progressHUD.state != null) {
+      _progressHUD.state.dismiss();
+    }
 
     return new Scaffold(
       appBar: new AppBar(title: appTitleBar),
@@ -212,24 +215,10 @@ class _TrackingPageState extends State<TrackingPage>
     controllerIcon.forward();
   }
 
-  void receiveServiceProviderStatusUpdate(ServiceProvider newSp) {
-    setState(() {
-      //update status and uid
-      for (var sp in widget.helpRequest.serviceProviderObjects) {
-        if (sp.name == newSp.name) {
-          setState(() {
-            sp.uid = newSp.uid;
-            sp.status = newSp.status;
-          });
-        }
-      }
-    });
-  }
-
   bool trackingButtonIsEnabled() {
     bool trackingButtonEnabled = false;
 
-    for (var sp in widget.helpRequest.serviceProviderObjects) {
+    for (var sp in serviceProviders) {
       if ((sp.name != "Police") && (sp.status.value == 1)) {
         trackingButtonEnabled = true;
       }
@@ -272,6 +261,64 @@ class _TrackingPageState extends State<TrackingPage>
     }
   }
 
+  //get live request details
+  getPendingHelpRequestFromServer() {
+    print('call getPendingHelpRequestFromServer');
+    WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
+  }
+
+  callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
+    print('call callbackWsGetExistingHelpReq');
+    if (e == null) {
+      if (helpRequest != null) {
+        setState(() {
+          serviceProviders = helpRequest.serviceProviderObjects;
+        });
+      } else {}
+    } else {
+      if (e.toString().startsWith(wsUserError)) {
+        showDataConnectionError(
+            context, wsUserError, e.toString().split("|").elementAt(1));
+      } else {
+        showDataConnectionError(
+            context, wsTechnicalError + ": " + e.toString());
+      }
+    }
+  }
+
+  //call web service to add service provider to  help request
+  void addSPHelpRequestWs(String spName) {
+    if (_progressHUD.state != null) {
+      _progressHUD.state.show();
+    }
+
+    ServiceHelpRequest.addServiceProvider(
+        widget.helpRequest.id, spName.toUpperCase(), addSpWsCallback);
+  }
+
+  void addSpWsCallback(http.Response response) {
+    try {
+      if (_progressHUD.state != null) {
+        _progressHUD.state.dismiss();
+      }
+      if (response.statusCode == 200) {
+        Map<String, dynamic> decodedResponse = json.decode(response.body);
+        if (decodedResponse["status"] == true) {
+          getPendingHelpRequestFromServer();
+        } else {
+          //show error dialog
+          showDataConnectionError(
+              context, wsUserError, decodedResponse["error"]);
+        }
+      } else {
+        //show error dialog
+        showDataConnectionError(context, wsTechnicalError);
+      }
+    } catch (e) {
+      showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
+    }
+  }
+
   /****** Handle activity states **********/
 
   @override
@@ -286,6 +333,13 @@ class _TrackingPageState extends State<TrackingPage>
       if (state == AppLifecycleState.resumed) {
         if (trackingMap != null) {
           trackingMap.handleDismiss();
+        }
+        updateStatusTimer.cancel();
+        updateStatusTimer = Timer.periodic(updateStatusRefreshSec,
+            (Timer t) => getPendingHelpRequestFromServer());
+      } else if (state == AppLifecycleState.inactive) {
+        if (updateStatusTimer != null) {
+          updateStatusTimer.cancel();
         }
       }
     });

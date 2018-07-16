@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage>
         color: Colors.white,
         containerColor: Colors.red[900],
         borderRadius: 5.0,
-        text: 'Loading...');
+        text: 'Loading...',);
 
     if ((_progressHUD.state != null)) {
       _progressHUD.state.show();

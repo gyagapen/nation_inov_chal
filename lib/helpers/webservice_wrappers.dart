@@ -43,7 +43,7 @@ class WebserServiceWrapper {
                 for (int i = 0; i < serviceProviders.length; i++) {
                   //determine wheter it's optional
                   if (helpRequest.requestedServiceProviders
-                      .contains(serviceProviders.elementAt(i).name)) {
+                      .contains(serviceProviders.elementAt(i).name.toUpperCase())) {
                     serviceProviders.elementAt(i).isOptional = false;
                   }
 
@@ -69,6 +69,9 @@ class WebserServiceWrapper {
 
                       serviceProviders.elementAt(i).location.longitude =
                           double.parse(assignmentItem.longitude);
+
+                      serviceProviders.elementAt(i).location.hasBeenLocated =
+                          true;
                     }
                   }
                 }

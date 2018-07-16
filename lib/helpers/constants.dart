@@ -7,3 +7,5 @@ final customerName = "Cedric Azemia";
 final age = "29";
 final bloodGroup = "A";
 final specialConditions = "Astma, Cardiac";
+
+final Duration updateStatusRefreshSec = new Duration(seconds: 5);

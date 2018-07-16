@@ -34,6 +34,24 @@ class ServiceHelpRequest {
     });
   }
 
+  
+  static void addServiceProvider(String helpRequestId, String providerName, callback) async {
+    Map<String, String> bodyRequest = new Map<String, String>();
+
+    bodyRequest["help_request_id"] = helpRequestId;
+    bodyRequest["provider_name"] = providerName;
+
+    http
+        .post(serviceBaseUrl + 'HelpRequest/addServiceProvider',
+            headers: generateHeaders(), body: bodyRequest)
+        .then((response) {
+      callback(response);
+    }).catchError((e) {
+      callback(null);
+    });
+  }
+
+
   static void initiateHelpRequest(
       String deviceId,
       String longitude,

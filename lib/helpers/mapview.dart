@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:map_view/map_view.dart';
 import 'constants.dart';
+import '../helpers/webservice_wrappers.dart';
 import 'common.dart';
 import 'dart:async';
 import '../models/service_provider.dart';
@@ -17,14 +18,13 @@ class TrackingMap {
 
   List<ServiceProvider> serviceProviders;
   HelpRequest helpRequest;
-  List<Timer> timers;
+  Timer timerRefreshLocation;
   BuildContext parentContext;
 
   TrackingMap(List<ServiceProvider> serviceProviders, HelpRequest helpRequest,
       BuildContext context) {
     this.serviceProviders = serviceProviders;
     this.helpRequest = helpRequest;
-    timers = new List<Timer>();
 
     this.parentContext = context;
     /* Scaffold.of(parentContext).showSnackBar(new SnackBar(
@@ -38,6 +38,33 @@ class TrackingMap {
         color: sp.iconInfo.iconColor);
 
     return spMarker;
+  }
+
+  //get live request details
+  getPendingHelpRequestFromServer() {
+    print('call getPendingHelpRequestFromServer 2');
+    WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
+  }
+
+  callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
+    print('call callbackWsGetExistingHelpReq 2');
+    if (e == null) {
+      if (helpRequest != null) {
+        for (var sp in helpRequest.serviceProviderObjects) {
+          if ((!sp.isOptional) && (sp.location.hasBeenLocated)) {
+            callUpdateSPLocation(sp);
+          }
+        }
+      } else {
+        print(wsUserError);
+      }
+    } else {
+      if (e.toString().startsWith(wsUserError)) {
+        print(wsUserError + ':' + e.toString());
+      } else {
+        print(wsTechnicalError + ": " + e.toString());
+      }
+    }
   }
 
   void callUpdateSPLocation(ServiceProvider newSp) {
@@ -72,21 +99,18 @@ class TrackingMap {
     var sub = mapView.onMapReady.listen((_) {
       //for each service providers
       for (var sp in serviceProviders) {
-        if (!sp.isOptional) {
+        if ((!sp.isOptional) && (sp.location.hasBeenLocated)) {
           //generate Marker
           sp.marker = generateMarker(sp);
 
           //add marker to map
           mapView.addMarker(sp.marker);
 
-          //trigger refresh
-          Timer timer = new Timer.periodic(
-              sPLocRefreshDuration,
-              (Timer t) =>
-                  UpdateServiceProviderLocation(sp, callUpdateSPLocation));
-          timers.add(timer);
         }
       }
+
+      timerRefreshLocation = new Timer.periodic(updateStatusRefreshSec,
+          (Timer t) => getPendingHelpRequestFromServer());
 
       //add own location
       var myLocationMarker = new Marker(
@@ -135,11 +159,7 @@ class TrackingMap {
 
   handleDismiss() async {
     print("handle dismiss triggered");
-
-    //cancel all timers
-    for (var t in timers) {
-      t.cancel();
-    }
+    timerRefreshLocation.cancel();
 
     mapView.dismiss();
     compositeSubscription.cancel();

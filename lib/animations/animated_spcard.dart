@@ -4,11 +4,7 @@ import '../models/service_provider.dart';
 
 class AnimatedSpCard extends AnimatedWidget {
   AnimatedSpCard(
-      {Key key,
-      Animation<double> animation,
-      this.serviceProvider,
-      this.header
-      })
+      {Key key, Animation<double> animation, this.serviceProvider, this.header})
       : super(key: key, listenable: animation);
 
   final ServiceProvider serviceProvider;
@@ -43,16 +39,24 @@ class AnimatedSpCard extends AnimatedWidget {
       return currentColor;
     }
 
-    String getETAText()
-    {
+    String getETAText() {
       String eTAText = "";
 
-      if(serviceProvider.status.value == 1)
-      {
-        eTAText = "ETA: ${serviceProvider.status.estTimeArrival}min";
+      if (serviceProvider.status.value == 1) {
+        eTAText = "ETA: ${serviceProvider.status.estTimeArrival}";
       }
 
       return eTAText;
+    }
+
+    String getDistanceText() {
+      String distText = "";
+
+      if (serviceProvider.status.value == 1) {
+        distText = "Distance: ${serviceProvider.status.distanceKm}";
+      }
+
+      return distText;
     }
 
     //UI components
@@ -78,22 +82,40 @@ class AnimatedSpCard extends AnimatedWidget {
           padding: new EdgeInsets.fromLTRB(0.0, 0.0, 5.0, 0.0),
           child: animatedText,
         ),
-        new Container(
-          padding: new EdgeInsets.fromLTRB(0.0, 25.0, 5.0, 0.0),
-          child: new Text(getETAText(), style: new TextStyle(fontStyle: FontStyle.italic, fontSize: 15.0),),
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            new Container(
+              padding: new EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+              child: new Text(
+                getETAText(),
+                style:
+                    new TextStyle(fontStyle: FontStyle.italic, fontSize: 15.0),
+              ),
+            ),
+            new Container(
+              padding: new EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+              child: new Text(
+                getDistanceText(),
+                style:
+                    new TextStyle(fontStyle: FontStyle.italic, fontSize: 15.0),
+              ),
+            )
+          ],
         )
       ],
     );
 
     var spCard = new Card(
         child: new Container(
-          width: 300.0,
-          height: 130.0,
-          child: new Column(children: [
-            header,
-            spContainer,
-          ]),
-        ));
+      width: 300.0,
+      height: 130.0,
+      child: new Column(children: [
+        header,
+        spContainer,
+      ]),
+    ));
 
     var spCardAnimated = new AnimatedContainer(
       margin: new EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 20.0),
