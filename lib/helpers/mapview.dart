@@ -128,7 +128,7 @@ class TrackingMap {
 
     compositeSubscription.add(sub);
 
-    sub = mapView.onLocationUpdated
+     /*sub = mapView.onLocationUpdated
         .listen((location) => print("Location updated $location"));
     compositeSubscription.add(sub);
 
@@ -140,7 +140,7 @@ class TrackingMap {
         .listen((location) => print("Touched location $location"));
     compositeSubscription.add(sub);
 
-    /*sub = mapView.onCameraChanged.listen((cameraPosition) =>
+   sub = mapView.onCameraChanged.listen((cameraPosition) =>
         this.setState(() => this.cameraPosition = cameraPosition));
     compositeSubscription.add(sub);*/
 

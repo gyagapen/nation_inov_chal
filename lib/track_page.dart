@@ -14,6 +14,9 @@ import 'package:progress_hud/progress_hud.dart';
 import 'services/service_help_request.dart';
 import 'helpers/webservice_wrappers.dart';
 import 'helpers/constants.dart';
+import 'package:location/location.dart';
+import 'dialogs/localisation_dialog.dart';
+import 'package:flutter/services.dart' show PlatformException;
 
 class TrackingPage extends StatefulWidget {
   TrackingPage({Key key, this.helpRequest}) : super(key: key);
@@ -42,6 +45,8 @@ class _TrackingPageState extends State<TrackingPage>
 
   Timer updateStatusTimer;
 
+  var _currentLocation = <String, double>{};
+
 //initialise animation
   initState() {
     super.initState();
@@ -69,10 +74,13 @@ class _TrackingPageState extends State<TrackingPage>
 
   Widget build(BuildContext context) {
     void openTrackingGpsMap() {
-      //show map
-      trackingMap =
-          new TrackingMap(serviceProviders, widget.helpRequest, context);
-      trackingMap.showMap();
+      getLocalisation(context);
+      if (_currentLocation != null) {
+        //show map
+        trackingMap =
+            new TrackingMap(serviceProviders, widget.helpRequest, context);
+        trackingMap.showMap();
+      }
     }
 
     Widget generateSpCard(ServiceProvider serviceProvider) {
@@ -165,20 +173,24 @@ class _TrackingPageState extends State<TrackingPage>
       _progressHUD.state.dismiss();
     }
 
-    return new Scaffold(
-      appBar: new AppBar(title: appTitleBar),
-      body: new Stack(
-        children: [
-          new Center(
-            child: new Container(
-                margin: new EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 5.0),
-                child: mainColumn),
+    return new WillPopScope(
+        onWillPop: () {
+          showCancelSPRequestDialog(context, callCancelHelpRequestWs);
+        },
+        child: Scaffold(
+          appBar: new AppBar(title: appTitleBar),
+          body: new Stack(
+            children: [
+              new Center(
+                child: new Container(
+                    margin: new EdgeInsets.fromLTRB(5.0, 20.0, 5.0, 5.0),
+                    child: mainColumn),
+              ),
+              _progressHUD,
+            ],
           ),
-          _progressHUD,
-        ],
-      ),
-      persistentFooterButtons: [actionButtons],
-    );
+          persistentFooterButtons: [actionButtons],
+        ));
   }
 
   //********************* functions **********************//
@@ -316,6 +328,29 @@ class _TrackingPageState extends State<TrackingPage>
       }
     } catch (e) {
       showDataConnectionError(context, wsTechnicalError + ": " + e.toString());
+    }
+  }
+
+  //retrieve localisation
+  void getLocalisation(BuildContext context) async {
+    var location = new Location();
+    try {
+      _currentLocation = await location.getLocation;
+      myLocation.latitude = _currentLocation["latitude"];
+      myLocation.longitude = _currentLocation["longitude"];
+
+      location.onLocationChanged.listen((Map<String, double> currentLocation) {
+        myLocation.latitude = currentLocation["latitude"];
+        myLocation.longitude = currentLocation["longitude"];
+      });
+      print('success localisation' + _currentLocation.toString());
+    } on PlatformException {
+      _currentLocation = null;
+      print('failed localisation ');
+      //show localisation popup if gps settings is not opened
+      if (!isLocationSettingsOpened) {
+        showLocalisationSettingsDialog(context);
+      }
     }
   }
 

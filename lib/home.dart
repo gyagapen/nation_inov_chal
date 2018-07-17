@@ -16,7 +16,6 @@ import 'dialogs/dialog_error_webservice.dart';
 import 'models/trigger_event.dart';
 import 'models/service_provider.dart';
 import 'models/help_request.dart';
-import 'models/assignment_details.dart';
 import 'helpers/webservice_wrappers.dart';
 
 class MyHomePage extends StatefulWidget {
