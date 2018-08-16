@@ -7,8 +7,14 @@ import 'package:flutter/services.dart' show PlatformException;
 
 //common variables
 bool isLocationSettingsOpened = false;
-String wsTechnicalError = "Cannot contact MauSafe servers. Kindly ensure that you are connected to internet";
-String wsUserError = "Error while sending request to MauSafe servers. Error Details: ";
+String wsTechnicalError =
+    "Cannot contact MauSafe servers. Kindly ensure that you are connected to internet";
+String wsUserError =
+    "Error while sending request to MauSafe servers. Error Details: ";
+
+String storedUiD = "";
+
+bool refreshCircleList = false;
 
 var appTitleBar = new Container(
     child: new Row(
@@ -36,8 +42,6 @@ void UpdateServiceProviderLocation(
     callback(sp);
   });
 }
-
-
 
 //get service provider status
 void UpdateServiceProviderStatus(
@@ -114,5 +118,5 @@ Future<String> getDeviceUID() async {
   }
 
 //if (!mounted) return;
-  return identifier+"-"+deviceName;
+  return identifier + "-" + deviceName;
 }

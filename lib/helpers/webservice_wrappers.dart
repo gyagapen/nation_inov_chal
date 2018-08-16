@@ -28,6 +28,7 @@ class WebserServiceWrapper {
     try {
       //call webservice to check if any live request
       getDeviceUID().then((uiD) {
+        storedUiD = uiD;
         retrieveLiveRequest(uiD.toString(), type, helpRequestId)
             .then((response) {
           if (response.statusCode == 200) {

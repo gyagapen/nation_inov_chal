@@ -15,8 +15,10 @@ class ServiceHelpRequest {
     return headers;
   }
 
-  static Future<http.Response> retrieveLiveRequest(deviceId, String type) async {
-    return http.get(serviceBaseUrl + 'HelpRequest?device_id=' + deviceId+'&type='+type,
+  static Future<http.Response> retrieveLiveRequest(
+      deviceId, String type) async {
+    return http.get(
+        serviceBaseUrl + 'HelpRequest?device_id=' + deviceId + '&type=' + type,
         headers: generateHeaders());
   }
 
@@ -35,8 +37,8 @@ class ServiceHelpRequest {
     });
   }
 
-  
-  static void addServiceProvider(String helpRequestId, String providerName, callback) async {
+  static void addServiceProvider(
+      String helpRequestId, String providerName, callback) async {
     Map<String, String> bodyRequest = new Map<String, String>();
 
     bodyRequest["help_request_id"] = helpRequestId;
@@ -51,7 +53,6 @@ class ServiceHelpRequest {
       callback(null);
     });
   }
-
 
   static void initiateHelpRequest(
       String deviceId,
@@ -94,5 +95,43 @@ class ServiceHelpRequest {
     }).catchError((e) {
       callback(null, providers);
     });
+  }
+
+  static Future<http.Response> getCircles(String deviceId) async {
+    return http.get(serviceBaseUrl + 'Circle?device_id=' + deviceId,
+        headers: generateHeaders());
+  }
+
+  static Future<http.Response> insertCircle(
+      String deviceId, String name, String number) async {
+    Map<String, String> bodyRequest = new Map<String, String>();
+
+    bodyRequest["device_id"] = deviceId;
+    bodyRequest["name"] = name;
+    bodyRequest["number"] = number;
+
+    return http.post(serviceBaseUrl + 'Circle/insert',
+        headers: generateHeaders(), body: bodyRequest);
+  }
+
+  static Future<http.Response> updateCircle(
+      String id, String name, String number) async {
+    Map<String, String> bodyRequest = new Map<String, String>();
+
+    bodyRequest["id"] = id;
+    bodyRequest["name"] = name;
+    bodyRequest["number"] = number;
+
+    return http.post(serviceBaseUrl + 'Circle/update',
+        headers: generateHeaders(), body: bodyRequest);
+  }
+
+  static Future<http.Response> deleteCircle(String id) async {
+    Map<String, String> bodyRequest = new Map<String, String>();
+
+    bodyRequest["id"] = id;
+
+    return http.post(serviceBaseUrl + 'Circle/delete',
+        headers: generateHeaders(), body: bodyRequest);
   }
 }
