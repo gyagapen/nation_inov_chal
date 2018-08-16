@@ -17,6 +17,7 @@ import 'helpers/constants.dart';
 import 'package:location/location.dart';
 import 'dialogs/localisation_dialog.dart';
 import 'package:flutter/services.dart' show PlatformException;
+import 'dialogs/dialog_arrived.dart';
 
 class TrackingPage extends StatefulWidget {
   TrackingPage({Key key, this.helpRequest}) : super(key: key);
@@ -276,7 +277,8 @@ class _TrackingPageState extends State<TrackingPage>
   //get live request details
   getPendingHelpRequestFromServer() {
     print('call getPendingHelpRequestFromServer');
-    WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
+    WebserServiceWrapper.getPendingHelpRequest(
+        callbackWsGetExistingHelpReq, "HELP_ID", this.widget.helpRequest.id);
   }
 
   callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
@@ -286,6 +288,10 @@ class _TrackingPageState extends State<TrackingPage>
         setState(() {
           serviceProviders = helpRequest.serviceProviderObjects;
         });
+
+        if (helpRequest.status == "COMPLETED") {
+          showArrivedDialog(this.context);
+        }
       } else {}
     } else {
       if (e.toString().startsWith(wsUserError)) {

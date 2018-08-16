@@ -4,6 +4,7 @@ import '../models/service_provider.dart';
 import '../helpers/constants.dart';
 
 class ServiceHelpRequest {
+  //static String serviceBaseUrl = "http://aroma.mu/webservices/mausafe/index.php/";
   static String serviceBaseUrl = "http://192.168.0.105:8083/mausafe/index.php/";
   static String apiKey = "58eb50e1-f87b-44a7-a4be-dcccd71625eb";
 
@@ -14,8 +15,8 @@ class ServiceHelpRequest {
     return headers;
   }
 
-  static Future<http.Response> retrieveLiveRequest(deviceId) async {
-    return http.get(serviceBaseUrl + 'HelpRequest?device_id=' + deviceId,
+  static Future<http.Response> retrieveLiveRequest(deviceId, String type) async {
+    return http.get(serviceBaseUrl + 'HelpRequest?device_id=' + deviceId+'&type='+type,
         headers: generateHeaders());
   }
 

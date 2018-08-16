@@ -9,7 +9,7 @@ Widget buildDrawer(context) {
   var drawer = new Drawer(
       child: new ListView(
     children: [
-      new DrawerHeader(
+      /*new DrawerHeader(
           child: new Column(
         children: [
           //new Text('Menu', style: new TextStyle(fontSize: 20.0),),
@@ -17,7 +17,7 @@ Widget buildDrawer(context) {
             "images/drawer_heartbeat.jpg",
           )
         ],
-      )),
+      )),*/
       new ListTile(
         title: new Row(
           children: [

@@ -7,6 +7,7 @@ import 'common.dart';
 import 'dart:async';
 import '../models/service_provider.dart';
 import '../models/help_request.dart';
+import '../dialogs/dialog_arrived.dart';
 
 class TrackingMap {
   MapView mapView = new MapView();
@@ -43,7 +44,8 @@ class TrackingMap {
   //get live request details
   getPendingHelpRequestFromServer() {
     print('call getPendingHelpRequestFromServer 2');
-    WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
+    WebserServiceWrapper.getPendingHelpRequest(
+        callbackWsGetExistingHelpReq, "HELP_ID", helpRequest.id);
   }
 
   callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
@@ -53,6 +55,11 @@ class TrackingMap {
         for (var sp in helpRequest.serviceProviderObjects) {
           if ((!sp.isOptional) && (sp.location.hasBeenLocated)) {
             callUpdateSPLocation(sp);
+          }
+
+          if (helpRequest.status == "COMPLETED") {
+            showArrivedDialog(this.parentContext);
+            handleDismiss();
           }
         }
       } else {
@@ -94,7 +101,7 @@ class TrackingMap {
             initialCameraPosition: new CameraPosition(
                 new Location(myLocation.latitude, myLocation.longitude), 1.0),
             title: ""),
-        toolbarActions: [new ToolbarAction("Cancel", 1)]);
+        toolbarActions: [new ToolbarAction("Close", 1)]);
 
     var sub = mapView.onMapReady.listen((_) {
       //for each service providers
@@ -105,7 +112,6 @@ class TrackingMap {
 
           //add marker to map
           mapView.addMarker(sp.marker);
-
         }
       }
 
@@ -128,7 +134,7 @@ class TrackingMap {
 
     compositeSubscription.add(sub);
 
-     /*sub = mapView.onLocationUpdated
+    /*sub = mapView.onLocationUpdated
         .listen((location) => print("Location updated $location"));
     compositeSubscription.add(sub);
 

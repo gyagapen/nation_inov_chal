@@ -6,13 +6,30 @@ import '../models/trigger_event.dart';
 import '../models/service_provider.dart';
 import '../models/help_request.dart';
 import '../models/assignment_details.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
 
 class WebserServiceWrapper {
-  static void getPendingHelpRequest(callback) {
+  static Future<http.Response> retrieveLiveRequest(
+      String deviceId, String type, String helpRequestId) async {
+    Future<http.Response> response;
+
+    if (type == "UID") {
+      response = ServiceHelpRequest.retrieveLiveRequest(deviceId, type);
+    } else {
+      response = ServiceHelpRequest.retrieveLiveRequest(helpRequestId, type);
+    }
+
+    return response;
+  }
+
+  static void getPendingHelpRequest(
+      callback, String type, String helpRequestId) {
     try {
       //call webservice to check if any live request
       getDeviceUID().then((uiD) {
-        ServiceHelpRequest.retrieveLiveRequest(uiD.toString()).then((response) {
+        retrieveLiveRequest(uiD.toString(), type, helpRequestId)
+            .then((response) {
           if (response.statusCode == 200) {
             Map<String, dynamic> decodedResponse = json.decode(response.body);
             if (decodedResponse["status"] == true) {
@@ -42,8 +59,8 @@ class WebserServiceWrapper {
                     helpRequestEvent.serviceProviders;
                 for (int i = 0; i < serviceProviders.length; i++) {
                   //determine wheter it's optional
-                  if (helpRequest.requestedServiceProviders
-                      .contains(serviceProviders.elementAt(i).name.toUpperCase())) {
+                  if (helpRequest.requestedServiceProviders.contains(
+                      serviceProviders.elementAt(i).name.toUpperCase())) {
                     serviceProviders.elementAt(i).isOptional = false;
                   }
 

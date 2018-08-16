@@ -32,6 +32,9 @@ class AnimatedSpCard extends AnimatedWidget {
           currentColor = animation.value > 40 ? Colors.orange : Colors.white;
           break;
         case 1:
+          currentColor = Colors.lightBlue;
+          break;
+        case 2:
           currentColor = Colors.lightGreen;
           break;
       }
@@ -44,6 +47,8 @@ class AnimatedSpCard extends AnimatedWidget {
 
       if (serviceProvider.status.value == 1) {
         eTAText = "ETA: ${serviceProvider.status.estTimeArrival}";
+      } else if (serviceProvider.status.value == 2) {
+        eTAText = "ETA: 0 min";
       }
 
       return eTAText;
@@ -54,6 +59,8 @@ class AnimatedSpCard extends AnimatedWidget {
 
       if (serviceProvider.status.value == 1) {
         distText = "Distance: ${serviceProvider.status.distanceKm}";
+      } else if (serviceProvider.status.value == 2) {
+        distText = "Distance: 0 m";
       }
 
       return distText;

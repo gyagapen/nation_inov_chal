@@ -75,11 +75,12 @@ class _MyHomePageState extends State<MyHomePage>
 
     //initiate progress hud
     _progressHUD = new ProgressHUD(
-        backgroundColor: Colors.black54,
-        color: Colors.white,
-        containerColor: Colors.red[900],
-        borderRadius: 5.0,
-        text: 'Loading...',);
+      backgroundColor: Colors.black54,
+      color: Colors.white,
+      containerColor: Colors.red[900],
+      borderRadius: 5.0,
+      text: 'Loading...',
+    );
 
     if ((_progressHUD.state != null)) {
       _progressHUD.state.show();
@@ -89,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage>
 
   //get live request details
   void getPendingHelpRequestFromServer() {
-    WebserServiceWrapper.getPendingHelpRequest(callbackWsGetExistingHelpReq);
+    WebserServiceWrapper.getPendingHelpRequest(
+        callbackWsGetExistingHelpReq, "UID", "");
   }
 
   void callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
