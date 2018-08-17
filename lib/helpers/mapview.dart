@@ -35,8 +35,26 @@ class TrackingMap {
 
   Marker generateMarker(ServiceProvider sp) {
     var spMarker = new Marker(
-        sp.uid, sp.name, sp.location.latitude, sp.location.longitude,
-        color: sp.iconInfo.iconColor);
+      sp.uid,
+      sp.name,
+      sp.location.latitude,
+      sp.location.longitude,
+      color: sp.iconInfo.iconColor,
+    );
+
+    if (sp.trackingImage != "") {
+      spMarker = new Marker(
+        sp.uid,
+        sp.name,
+        sp.location.latitude,
+        sp.location.longitude,
+        markerIcon: new MarkerIcon(
+          sp.trackingImage,
+          width: 125.0,
+          height: 125.0,
+        ),
+      );
+    }
 
     return spMarker;
   }
@@ -52,6 +70,11 @@ class TrackingMap {
     print('call callbackWsGetExistingHelpReq 2');
     if (e == null) {
       if (helpRequest != null) {
+        //remove all markers before
+        for (var sp in serviceProviders) {
+          mapView.removeMarker(sp.marker);
+        }
+
         for (var sp in helpRequest.serviceProviderObjects) {
           if ((!sp.isOptional) && (sp.location.hasBeenLocated)) {
             callUpdateSPLocation(sp);
@@ -77,14 +100,13 @@ class TrackingMap {
   void callUpdateSPLocation(ServiceProvider newSp) {
     //locate service provider
     for (var sp in serviceProviders) {
+      
       if (sp.name == newSp.name) {
         print('update ' + newSp.name);
 
         sp.location = newSp.location;
         sp.status = newSp.status;
         _spETA = sp.status.estTimeArrival;
-
-        mapView.removeMarker(sp.marker);
 
         Marker myServiceProviderLocationMarker = generateMarker(sp);
         sp.marker = myServiceProviderLocationMarker;

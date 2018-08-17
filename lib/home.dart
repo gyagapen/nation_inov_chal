@@ -178,7 +178,8 @@ class _MyHomePageState extends State<MyHomePage>
     //photo
     var avatarCircle = new Center(
       child: new CircleAvatar(
-        backgroundImage: new AssetImage('images/pic_avatar.jpg'),
+        backgroundImage: new AssetImage('images/black_avatar.png'),
+        backgroundColor: Colors.white,
         radius: 50.0,
       ),
     );

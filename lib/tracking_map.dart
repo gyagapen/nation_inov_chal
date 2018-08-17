@@ -22,8 +22,7 @@ class _TrackingMapPageState extends State<TrackingMapPage>
   Timer updateSPLocTimer;
   MapView generateAMap() {
     MapView newMapView = new MapView();
-
-    newMapView.setCameraPosition(myLocation.latitude, myLocation.longitude, 1.0);
+    newMapView.setCameraPosition(new CameraPosition(new Location(myLocation.latitude, myLocation.longitude), 1.0));
 
     //add markers
     /*var myLocationMarker = new Marker(

@@ -44,7 +44,7 @@ class _InsertCirclePageState extends State<InsertCirclePage> {
     //photo
     var avatarCircle = new Center(
       child: new CircleAvatar(
-        backgroundImage: new AssetImage('images/pic_avatar.jpg'),
+        backgroundImage: new AssetImage('images/anonymous_avatar.png'),
         radius: 50.0,
       ),
     );

@@ -48,18 +48,16 @@ class _CirclePageState extends State<CirclePage> {
 
     //generate contact list tile
     ListTile generateContactListTile(CircleModel circleModel, String photo) {
-      var avatarCircle = new Center(
-        child: new CircleAvatar(
-          backgroundImage: new AssetImage(photo),
-          radius: 20.0,
-        ),
+      var avatarCircle = new CircleAvatar(
+        backgroundImage: new AssetImage(photo),
+        radius: 20.0,
       );
 
       return new ListTile(
         title: new Text(circleModel.name),
         subtitle: new Text(circleModel.number),
         leading: avatarCircle,
-        trailing: new Row(
+        trailing: new Column(
           children: [
             new IconButton(
               icon: new Icon(Icons.edit),
@@ -90,8 +88,9 @@ class _CirclePageState extends State<CirclePage> {
 
       for (var circle in _circlesList) {
         if (circle != null) {
-          listTiles
-              .add(generateContactListTile(circle, 'images/pic_avatar.jpg'));
+          listTiles.add(
+              generateContactListTile(circle, 'images/anonymous_avatar.png'));
+          listTiles.add(new Divider());
         }
       }
 
