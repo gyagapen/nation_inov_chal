@@ -5,7 +5,7 @@ import '../helpers/constants.dart';
 
 class ServiceHelpRequest {
   //static String serviceBaseUrl = "http://aroma.mu/webservices/mausafe/index.php/";
-  static String serviceBaseUrl = "http://192.168.0.105:8083/mausafe/index.php/";
+  static String serviceBaseUrl = "http://192.168.0.101:8083/mausafe/index.php/";
   static String apiKey = "58eb50e1-f87b-44a7-a4be-dcccd71625eb";
 
   static Map<String, String> generateHeaders() {

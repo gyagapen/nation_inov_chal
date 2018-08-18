@@ -139,8 +139,10 @@ class _CirclePageState extends State<CirclePage> {
         if (decodedResponse["status"] == true) {
           //map with object
           List<CircleModel> wsCircles = new List<CircleModel>();
-          for (var circle in decodedResponse["circles"]) {
-            wsCircles.add(CircleModel.fromJson(circle));
+          if (decodedResponse["circles"] != null) {
+            for (var circle in decodedResponse["circles"]) {
+              wsCircles.add(CircleModel.fromJson(circle));
+            }
           }
 
           setState(() {
