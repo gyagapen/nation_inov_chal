@@ -99,24 +99,29 @@ class _CirclePageState extends State<CirclePage> {
       );
     }
 
-    return new Scaffold(
-      appBar: new AppBar(title: new Text("My Circle")),
-      body: generateContactList(),
-      //body: snackBar,
-      drawer: buildDrawer(context),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            new MaterialPageRoute(
-              builder: (context) => new InsertCirclePage(),
-            ),
-          );
-        },
-        tooltip: 'Add',
-        child: new Icon(Icons.add),
-      ),
-      // This trailing comma makes auto-formatting nicer for build methods.
+    return new Stack(
+      children: [
+        new Scaffold(
+          appBar: new AppBar(title: new Text("My Circle")),
+          body: generateContactList(),
+          //body: snackBar,
+          drawer: buildDrawer(context),
+          floatingActionButton: new FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) => new InsertCirclePage(),
+                ),
+              );
+            },
+            tooltip: 'Add',
+            child: new Icon(Icons.add),
+          ),
+          // This trailing comma makes auto-formatting nicer for build methods.
+        ),
+        _progressHUD
+      ],
     );
   }
 
