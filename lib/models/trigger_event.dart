@@ -39,8 +39,9 @@ class TriggerEvent {
         icon.iconImage = new AssetImage("images/fire.png");
         icon.iconColor = Colors.orange[500];
 
-        serviceProviders.add(new ServiceProvider("Police"));
+        serviceProviders.add(new ServiceProvider("Fireman"));
         serviceProviders.add(new ServiceProvider("SAMU", true));
+        serviceProviders.add(new ServiceProvider("Police", true));
         break;
       case "Thief":
         icon.iconImage = new AssetImage("images/thief.png");

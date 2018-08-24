@@ -17,6 +17,8 @@ import 'models/trigger_event.dart';
 import 'models/service_provider.dart';
 import 'models/help_request.dart';
 import 'helpers/webservice_wrappers.dart';
+import 'helpers/constants.dart';
+import 'animations/animated_witness_switch.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -37,7 +39,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   bool _isWitness = false;
   var _currentLocation = <String, double>{};
   ProgressHUD _progressHUD;
@@ -45,6 +47,9 @@ class _MyHomePageState extends State<MyHomePage>
 
   AnimationController controller;
   Animation<double> animation;
+
+  AnimationController controllerSwitch;
+  Animation<double> animationSwitch;
 
   //Triggering events
   TriggerEvent accidentEvent = new TriggerEvent("Accident");
@@ -61,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage>
 
     WidgetsBinding.instance.addObserver(this);
 
+    //controller and animation for gps
     controller = new AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     animation = new Tween(begin: 0.0, end: 100.0).animate(controller);
@@ -72,6 +78,23 @@ class _MyHomePageState extends State<MyHomePage>
         controller.forward();
       }
     });
+
+    //controller and animation for witness switch
+    controllerSwitch = new AnimationController(
+        duration: const Duration(milliseconds: 1500), vsync: this);
+    animationSwitch =
+        new Tween(begin: 0.0, end: 100.0).animate(controllerSwitch);
+
+    animationSwitch.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controllerSwitch.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        controllerSwitch.forward();
+      }
+    });
+
+    //launch switch animation
+    controllerSwitch.forward();
 
     //initiate progress hud
     _progressHUD = new ProgressHUD(
@@ -191,19 +214,20 @@ class _MyHomePageState extends State<MyHomePage>
       color: Colors.grey[300],
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [avatarCircle, new Text('Cedric Azemia')],
+        children: [avatarCircle, new Text(customerName)],
       ),
     );
 
-    //witness switch
     var switchWitness = new Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        new Icon(Icons.remove_red_eye),
+        new AnimatedWitnessSwitch(
+          animation: animationSwitch,
+        ),
         new Switch(
-          value: _isWitness,
-          onChanged: changeToggle,
+          value: true,
+          onChanged: (value) {},
         )
       ],
     );

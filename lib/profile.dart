@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'drawer.dart';
+import 'helpers/constants.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key, this.title}) : super(key: key);
@@ -21,7 +22,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   List<String> _bloodGroups = ['A', 'B', 'AB', '0'];
-  String _selectedBloodGroup = 'A';
+  String _selectedBloodGroup = bloodGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,8 @@ class _ProfilePageState extends State<ProfilePage> {
     //photo
     var avatarCircle = new Center(
       child: new CircleAvatar(
-        backgroundImage: new AssetImage('images/pic_avatar.jpg'),
+        backgroundImage: new AssetImage('images/black_avatar.png'),
+        backgroundColor: Colors.white,
         radius: 50.0,
       ),
     );
@@ -120,16 +122,16 @@ class _ProfilePageState extends State<ProfilePage> {
         mainAxisSize: MainAxisSize.max,
         children: [
           generateSettingsRow(generateFormLabel("Name"),
-              generateTextField("Cédric Azemia", "Specify your name")),
+              generateTextField(customerName, "Specify your name")),
           generateSettingsRow(generateFormLabel("ID Card No"),
-              generateTextField("1409893321", "Specify your NIC")),
+              generateTextField(nic, "Specify your NIC")),
           generateSettingsRow(generateFormLabel("Age"),
-              generateTextField("29", "Specify your age")),
+              generateTextField(age, "Specify your age")),
           generateSettingsRow(generateFormLabel("Blood Group"), bloodDropDown),
           generateSettingsRow(
               generateFormLabel("Special Conditions"),
-              generateTextField("Allergy to Libuprofene",
-                  "Specify your any special conditions")),
+              generateTextField(
+                  specialConditions, "Specify any special conditions")),
           saveButton,
         ],
       ),

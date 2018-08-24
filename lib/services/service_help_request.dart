@@ -71,6 +71,7 @@ class ServiceHelpRequest {
     bodyRequest["longitude"] = longitude;
     bodyRequest["latitude"] = latitude;
     bodyRequest["event_type"] = eventType;
+    bodyRequest["nic"] = nic;
 
     String providerStrList = "";
     for (int i = 0; i < providers.length; i++) {
