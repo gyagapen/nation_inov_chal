@@ -226,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage>
           animation: animationSwitch,
         ),
         new Switch(
-          value: true,
+          value: false,
           onChanged: (value) {},
         )
       ],
