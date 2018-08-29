@@ -4,7 +4,6 @@ import 'home.dart';
 import 'helpers/constants.dart';
 
 void main() {
-    
   MapView.setApiKey(gmapsApiKey);
   runApp(new MyApp());
 }
@@ -14,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: appTitleBarText,
       theme: new ThemeData(
         // This is the theme of your application.

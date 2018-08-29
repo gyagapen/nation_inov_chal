@@ -25,6 +25,41 @@ var appTitleBar = new Container(
       AssetImage("images/general_logo.png"),
       size: 100.0,
     ),
+    new Container(
+      padding: new EdgeInsets.fromLTRB(120.0, 0.0, 0.0, 0.0),
+      child: new GestureDetector(
+        onTap: () {
+          print("open notification list");
+        },
+        child: new Stack(
+          children: <Widget>[
+            new Icon(
+              Icons.notifications,
+              size: 30.0,
+            ),
+            new Positioned(
+              top: 1.0,
+              right: 0.0,
+              child: new Stack(
+                children: <Widget>[
+                  new Icon(Icons.brightness_1,
+                      size: 18.0, color: Colors.green[800]),
+                  new Positioned(
+                    top: 1.0,
+                    right: 4.0,
+                    child: new Text("1",
+                        style: new TextStyle(
+                            color: Colors.white,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w500)),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    ),
     //new Text(appTitleBarText),
   ],
 ));
