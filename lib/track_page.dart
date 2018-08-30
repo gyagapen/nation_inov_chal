@@ -179,7 +179,7 @@ class _TrackingPageState extends State<TrackingPage>
           showCancelSPRequestDialog(context, callCancelHelpRequestWs);
         },
         child: Scaffold(
-          appBar: new AppBar(title: appTitleBar),
+          appBar: new AppBar(title: getAppTitleBar(context)),
           body: new Stack(
             children: [
               new Center(

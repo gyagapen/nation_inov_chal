@@ -4,6 +4,7 @@ import '../models/service_provider.dart';
 import 'dart:async';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart' show PlatformException;
+import '../notification_list.dart';
 
 //common variables
 bool isLocationSettingsOpened = false;
@@ -16,53 +17,63 @@ String storedUiD = "";
 
 bool refreshCircleList = false;
 
-var appTitleBar = new Container(
+Widget getAppTitleBar(BuildContext context) {
+  var appTitleBar = new Container(
     child: new Row(
-  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  mainAxisSize: MainAxisSize.min,
-  children: [
-    new ImageIcon(
-      AssetImage("images/general_logo.png"),
-      size: 100.0,
-    ),
-    new Container(
-      padding: new EdgeInsets.fromLTRB(120.0, 0.0, 0.0, 0.0),
-      child: new GestureDetector(
-        onTap: () {
-          print("open notification list");
-        },
-        child: new Stack(
-          children: <Widget>[
-            new Icon(
-              Icons.notifications,
-              size: 30.0,
-            ),
-            new Positioned(
-              top: 1.0,
-              right: 0.0,
-              child: new Stack(
-                children: <Widget>[
-                  new Icon(Icons.brightness_1,
-                      size: 18.0, color: Colors.green[800]),
-                  new Positioned(
-                    top: 1.0,
-                    right: 4.0,
-                    child: new Text("1",
-                        style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w500)),
-                  )
-                ],
-              ),
-            )
-          ],
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        new ImageIcon(
+          AssetImage("images/general_logo.png"),
+          size: 100.0,
         ),
-      ),
+        new Container(
+          padding: new EdgeInsets.fromLTRB(120.0, 0.0, 0.0, 0.0),
+          child: new GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) => new NotificationListPage(),
+                ),
+              );
+            },
+            child: new Stack(
+              children: <Widget>[
+                new Icon(
+                  Icons.notifications,
+                  size: 30.0,
+                ),
+                new Positioned(
+                  top: 1.0,
+                  right: 0.0,
+                  child: new Stack(
+                    children: <Widget>[
+                      new Icon(Icons.brightness_1,
+                          size: 18.0, color: Colors.green[800]),
+                      new Positioned(
+                        top: 1.0,
+                        right: 4.0,
+                        child: new Text("1",
+                            style: new TextStyle(
+                                color: Colors.white,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w500)),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        //new Text(appTitleBarText),
+      ],
     ),
-    //new Text(appTitleBarText),
-  ],
-));
+  );
+
+  return appTitleBar;
+}
 
 //custom locations
 CustomLocation myLocation = new CustomLocation();
