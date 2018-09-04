@@ -201,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage>
     //photo
     var avatarCircle = new Center(
       child: new CircleAvatar(
-        backgroundImage: new AssetImage('images/black_avatar.png'),
+        backgroundImage: new AssetImage('images/black_avatar_4.png'),
         backgroundColor: Colors.white,
         radius: 50.0,
       ),

@@ -297,9 +297,11 @@ class _TrackingPageState extends State<TrackingPage>
       if (e.toString().startsWith(wsUserError)) {
         showDataConnectionError(
             context, wsUserError, e.toString().split("|").elementAt(1));
+        //print("ERROR MAUSAFE " + wsTechnicalError + ": " + e.toString());
       } else {
         showDataConnectionError(
             context, wsTechnicalError + ": " + e.toString());
+        //print("ERROR MAUSAFE " + wsTechnicalError + ": " + e.toString());
       }
     }
   }
