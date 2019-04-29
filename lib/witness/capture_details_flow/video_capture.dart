@@ -20,10 +20,14 @@ Future<Null> showVideoCaptureDialog(
       return new AlertDialog(
         title: new Text('Sinister Details'),
         content:
-        AspectRatio(
+        new Container(
+          height: 100,
+          child: new AspectRatio(
           aspectRatio: controller.value.aspectRatio,
           child: CameraPreview(controller),
+        ),
         )
+        
         /*new SingleChildScrollView(
           child: new ListBody(
             children: <Widget>[

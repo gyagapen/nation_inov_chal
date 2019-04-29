@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'video_capture.dart';
 import 'stepper.dart';
 import 'dart:async';
 
@@ -33,6 +34,7 @@ Future<Null> showBuildingTypeDialog(
               child: new Text('Next'),
               onPressed: () {
                 Navigator.pop(context);
+                showVideoCaptureDialog(context, id, callback);
               }),
         ],
       );
