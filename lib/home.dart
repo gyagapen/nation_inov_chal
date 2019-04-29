@@ -19,6 +19,7 @@ import 'models/help_request.dart';
 import 'helpers/webservice_wrappers.dart';
 import 'helpers/constants.dart';
 import 'animations/animated_witness_switch.dart';
+import 'witness/capture_details_flow/sinister_type.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -155,28 +156,19 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  void _toggleWitness() {
-    setState(() {
-      _isWitness = !_isWitness;
-    });
-  }
-
-  void changeToggle(newValue) {
-    _isWitness = newValue;
-  }
-
 //retrieve localisation
   void getLocalisation(BuildContext context) async {
     var location = new Location();
     try {
-      _currentLocation = await location.getLocation;
+      _currentLocation = await location.getLocation();
       myLocation.latitude = _currentLocation["latitude"];
       myLocation.longitude = _currentLocation["longitude"];
 
-      location.onLocationChanged.listen((Map<String, double> currentLocation) {
+      location.onLocationChanged().listen((Map<String, double> currentLocation) {
         myLocation.latitude = currentLocation["latitude"];
         myLocation.longitude = currentLocation["longitude"];
       });
+
       print('success localisation' + _currentLocation.toString());
       controller.reset();
       controller.stop(canceled: true);
@@ -227,7 +219,11 @@ class _MyHomePageState extends State<MyHomePage>
         ),
         new Switch(
           value: false,
-          onChanged: (value) {},
+          onChanged: (value) {
+            setState(() {
+             _isWitness =value; 
+            });
+          },
         )
       ],
     );
@@ -242,7 +238,13 @@ class _MyHomePageState extends State<MyHomePage>
         tooltip: event.name,
         onPressed: () {
           if (_currentLocation != null) {
-            initHelpRequest(event);
+            if(_isWitness)
+            {
+              showSinisterTypeDialog(context, event, initHelpRequest);
+            } else
+            {
+                initHelpRequest(event);
+            }
           } else {
             //try to get location
             getLocalisation(context);

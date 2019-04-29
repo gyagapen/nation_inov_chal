@@ -343,11 +343,11 @@ class _TrackingPageState extends State<TrackingPage>
   void getLocalisation(BuildContext context) async {
     var location = new Location();
     try {
-      _currentLocation = await location.getLocation;
+      _currentLocation = await location.getLocation();
       myLocation.latitude = _currentLocation["latitude"];
       myLocation.longitude = _currentLocation["longitude"];
 
-      location.onLocationChanged.listen((Map<String, double> currentLocation) {
+      location.onLocationChanged().listen((Map<String, double> currentLocation) {
         myLocation.latitude = currentLocation["latitude"];
         myLocation.longitude = currentLocation["longitude"];
       });

@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:map_view/map_view.dart';
 import 'home.dart';
 import 'helpers/constants.dart';
+import 'package:camera/camera.dart';
+import 'dart:async';
+import 'helpers/common.dart';
 
-void main() {
+Future<void> main() async {
   MapView.setApiKey(gmapsApiKey);
+  cameras = await availableCameras();
   runApp(new MyApp());
 }
 

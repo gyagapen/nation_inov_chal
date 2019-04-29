@@ -5,8 +5,10 @@ import 'dart:async';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import '../notification_list.dart';
+import 'package:camera/camera.dart';
 
 //common variables
+List<CameraDescription> cameras;
 bool isLocationSettingsOpened = false;
 String wsTechnicalError =
     "Cannot contact MauSafe servers. Kindly ensure that you are connected to internet";
