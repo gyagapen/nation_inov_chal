@@ -1,41 +1,152 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'building_type.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import '../../helpers/common.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:mausafe_v0/models/trigger_event.dart';
 
 Future<Null> showVideoCaptureDialog(
     BuildContext context, TriggerEvent id, callback) async {
+
+   void _showCameraException(CameraException e) {
+      String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
+      print(errorText);
+  
+      Fluttertoast.showToast(
+          msg: 'Error: ${e.code}\n${e.description}',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white
+      );
+    }
+
+     Future<String> _startVideoRecording() async {
+    if (!cameraController.value.isInitialized) {
+      Fluttertoast.showToast(
+          msg: 'Please wait',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.grey,
+          textColor: Colors.white
+      );
+ 
+      return null;
+    }
+
+
+ 
+    // Do nothing if a recording is on progress
+    if (cameraController.value.isRecordingVideo) {
+      return null;
+    }
+ 
+    final Directory appDirectory = await getApplicationDocumentsDirectory();
+    final String videoDirectory = '${appDirectory.path}/Videos';
+    await Directory(videoDirectory).create(recursive: true);
+    final String currentTime = DateTime.now().millisecondsSinceEpoch.toString();
+    final String filePath = '$videoDirectory/${currentTime}.mp4';
+ 
+    try {
+      await cameraController.startVideoRecording(filePath);
+      videoPath = filePath;
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
+ 
+    return filePath;
+  }
+
+  void _onRecordButtonPressed() {
+    _startVideoRecording().then((String filePath) {
+      if (filePath != null) {
+        Fluttertoast.showToast(
+            msg: 'Recording video started',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.grey,
+            textColor: Colors.white
+        );
+      }
+    });
+  }
+
+  Future<void> _stopVideoRecording() async {
+    if (!cameraController.value.isRecordingVideo) {
+      return null;
+    }
+ 
+    try {
+      await cameraController.stopVideoRecording();
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
+  }
+
+  void _onStopButtonPressed() {
+    _stopVideoRecording().then((_) {
+      Fluttertoast.showToast(
+          msg: 'Video recorded to $videoPath',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.grey,
+          textColor: Colors.white
+      );
+    });
+  }
+ 
+ 
+
   return showDialog<Null>(
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
 
-      //init cameras
-      CameraController controller =CameraController(cameras[0], ResolutionPreset.medium);
-      controller.initialize();
+      
 
       return new AlertDialog(
         title: new Text('Sinister Details'),
         content:
         new Container(
-          height: 100,
-          child: new AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: CameraPreview(controller),
+              height: 500,
+              child:
+        new Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            new Container(
+              height: 500,
+              child: new AspectRatio(
+              aspectRatio: cameraController.value.aspectRatio,
+              child: CameraPreview(cameraController),
+              ),
+            ),
+            new Row(
+              children: [
+                new FlatButton(
+                  child: new Text("Start Recording"),
+                  onPressed: _onRecordButtonPressed
+                ),
+                new FlatButton(
+                  child: new Text("Stop Recording"),
+                  onPressed: _onStopButtonPressed
+                )
+              ],
+            )
+          ],
         ),
-        )
-        
-        /*new SingleChildScrollView(
-          child: new ListBody(
-            children: <Widget>[
-              new Text('Please select the sinister type'),
-            ],
-          ),
-          //child: new MyStepperPage(),
-        )*/,
+        ),
         actions: <Widget>[
           new FlatButton(
               child: new Text('Cancel'),

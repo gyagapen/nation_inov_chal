@@ -8,7 +8,12 @@ import 'helpers/common.dart';
 
 Future<void> main() async {
   MapView.setApiKey(gmapsApiKey);
+
+
+  //init cameras
   cameras = await availableCameras();
+  cameraController =CameraController(cameras[0], ResolutionPreset.medium);
+  cameraController.initialize();
   runApp(new MyApp());
 }
 
