@@ -1,16 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'building_type.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import '../../helpers/common.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
+import '../../models/witness_details.dart';
+import 'flow_manager.dart';
 
 import 'package:mausafe_v0/models/trigger_event.dart';
 
-Future<Null> showVideoCaptureDialog(
+const String VIDEO_CAPTURE_DIALOG_ID = "video_capture_dialog";
+
+Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
     BuildContext context, TriggerEvent id, callback) async {
 
    void _showCameraException(CameraException e) {
@@ -56,7 +59,7 @@ Future<Null> showVideoCaptureDialog(
  
     try {
       await cameraController.startVideoRecording(filePath);
-      videoPath = filePath;
+      witnessDetails.videoPath = filePath;
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -96,7 +99,7 @@ Future<Null> showVideoCaptureDialog(
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
       Fluttertoast.showToast(
-          msg: 'Video recorded to $videoPath',
+          msg: 'Video recorded to ${witnessDetails.videoPath}',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 1,
@@ -119,7 +122,7 @@ Future<Null> showVideoCaptureDialog(
         title: new Text('Sinister Details'),
         content:
         new Container(
-              height: 500,
+              height: 600,
               child:
         new Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -152,13 +155,12 @@ Future<Null> showVideoCaptureDialog(
               child: new Text('Cancel'),
               onPressed: () {
                 Navigator.pop(context);
-                //callback(id);
               }),
           new FlatButton(
               child: new Text('Next'),
               onPressed: () {
                 Navigator.pop(context);
-                showBuildingTypeDialog(context, id, callback);
+                WitnessFlowManager.showWitnessNextStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
               }),
         ],
       );

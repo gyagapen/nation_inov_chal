@@ -19,7 +19,8 @@ import 'models/help_request.dart';
 import 'helpers/webservice_wrappers.dart';
 import 'helpers/constants.dart';
 import 'animations/animated_witness_switch.dart';
-import 'witness/capture_details_flow/sinister_type.dart';
+import 'witness/capture_details_flow/flow_manager.dart';
+import 'models/witness_details.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -240,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage>
           if (_currentLocation != null) {
             if(_isWitness)
             {
-              showSinisterTypeDialog(context, event, initHelpRequest);
+              WitnessFlowManager.showWitnessNextStep("", new WitnessDetails(), context, event, initHelpRequest);
             } else
             {
                 initHelpRequest(event);
