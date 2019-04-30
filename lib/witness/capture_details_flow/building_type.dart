@@ -15,11 +15,10 @@ Future<Null> showBuildingTypeDialog(WitnessDetails witnessDetails,
     builder: (BuildContext context) {
 
       return new AlertDialog(
-        title: new Text('Building Type'),
+        title: new Text('Building type?'),
         content: new SingleChildScrollView(
                     child: new ListBody(
             children: <Widget>[
-              new Text('Please select the building type'),
               BuildingTypeDialogContent(witnessDetails: witnessDetails,),
             ],
           ),

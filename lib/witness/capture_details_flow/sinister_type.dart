@@ -17,11 +17,10 @@ Future<Null> showSinisterTypeDialog(WitnessDetails witnessDetails,
 
     
       return new AlertDialog(
-        title: new Text('Sinister Details'),
+        title: new Text('Sinister Type?'),
         content: new SingleChildScrollView(
           child: new ListBody(
             children: <Widget>[
-              new Text('Please select the sinister type'),
               new SinisterDialogContent(witnessDetails: witnessDetails,),
             ],
           ),

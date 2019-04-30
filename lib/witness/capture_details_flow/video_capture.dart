@@ -16,7 +16,52 @@ const String VIDEO_CAPTURE_DIALOG_ID = "video_capture_dialog";
 Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
     BuildContext context, TriggerEvent id, callback) async {
 
-   void _showCameraException(CameraException e) {
+   
+  return showDialog<Null>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+
+      
+
+      return new AlertDialog(
+        title: new Text('Record a video'),
+        content: new VideoCaptureContent(witnessDetails: witnessDetails,)
+        ,
+        actions: <Widget>[
+          new FlatButton(
+              child: new Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          new FlatButton(
+              child: new Text('Next'),
+              onPressed: () {
+                Navigator.pop(context);
+                WitnessFlowManager.showWitnessNextStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
+              }),
+        ],
+      );
+    },
+  );
+}
+
+
+class VideoCaptureContent extends StatefulWidget {
+  VideoCaptureContent({
+    Key key,
+    this.witnessDetails,
+  }): super(key: key);
+
+  WitnessDetails witnessDetails;
+
+  @override
+  _VideoCaptureContentState createState() => new _VideoCaptureContentState();
+}
+
+class _VideoCaptureContentState extends State<VideoCaptureContent> {
+
+  void _showCameraException(CameraException e) {
       String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
       print(errorText);
   
@@ -59,7 +104,7 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
  
     try {
       await cameraController.startVideoRecording(filePath);
-      witnessDetails.videoPath = filePath;
+      widget.witnessDetails.videoPath = filePath;
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -98,9 +143,9 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
 
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
-      print("Video temporaly saved to $videoPath");
+      print("Video temporaly saved to ${widget.witnessDetails.videoPath}");
       Fluttertoast.showToast(
-          msg: 'Video recorded to ${witnessDetails.videoPath}',
+          msg: 'Video recorded to ${widget.witnessDetails.videoPath}',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 1,
@@ -112,17 +157,14 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
  
  
 
-  return showDialog<Null>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
+  @override
+  void initState(){
+    super.initState();
+  }
 
-      
-
-      return new AlertDialog(
-        title: new Text('Sinister Details'),
-        content:
-        new Container(
+  @override
+  Widget build(BuildContext context) {
+   return new Container(
               height: 600,
               child:
         new Column(
@@ -150,21 +192,7 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
             )
           ],
         ),
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              child: new Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          new FlatButton(
-              child: new Text('Next'),
-              onPressed: () {
-                Navigator.pop(context);
-                WitnessFlowManager.showWitnessNextStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
-              }),
-        ],
-      );
-    },
-  );
+        );
+  }
+
 }

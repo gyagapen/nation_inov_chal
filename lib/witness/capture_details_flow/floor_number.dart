@@ -16,7 +16,7 @@ Future<Null> showFloorNumberDialog(WitnessDetails witnessDetails,
     builder: (BuildContext context) {
 
       return new AlertDialog(
-        title: new Text('Floor Details'),
+        title: new Text('Number or floor(s)?'),
         content: new SingleChildScrollView(
           child: new ListBody(
             children: <Widget>[
@@ -59,62 +59,46 @@ class FloorNumberContent extends StatefulWidget {
 
 class _FloorNumberContentState extends State<FloorNumberContent> {
 
+  String _radioValue = "1-3";
+
+  void _handleRadioValueChange(String value) {
+      setState(() {
+        _radioValue = value;
+        widget.witnessDetails.noOfFloors = _radioValue;
+      });
+  }
 
   @override
   void initState(){
     super.initState();
+    widget.witnessDetails.noOfFloors = _radioValue;
   }
+
 
   @override
-  /*Widget build(BuildContext context) {
-   return new Form(
-      key: widget.formKey,
-      child: new Column(
-        children: [
-          new Container(
-            margin: new EdgeInsets.fromLTRB(20.0, 5.0, 5.0, 15.0),
-            child: new TextFormField(
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                if(!isNumeric(value))
-                {
-                  return 'Please enter a numeric value';
-                }
-              },
-              initialValue: "0",
-              onSaved: (val) => widget.witnessDetails.noOfFloors = int.parse(val),
-              keyboardType: TextInputType.number,
-              decoration: new InputDecoration(
-                hintText: '',
-                hintStyle: new TextStyle(fontStyle: FontStyle.italic),
-                labelText: 'Number or floors',
-                labelStyle: new TextStyle(fontSize: 20.0),
-              ),
-            ),
-          ),
-          ],
-      ),
-        
-      );
-  }*/
-
   Widget build(BuildContext context) {
-      return  new Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          new TextFormField(
-            decoration: new InputDecoration(labelText: "Number or floor(s)"),
-            initialValue: "0",
-            keyboardType: TextInputType.number,
-            onSaved: (newValue) {
-        setState(() {
-          widget.witnessDetails.noOfFloors = int.parse(newValue);
-        });
-      },
-          ),
-        ],
-      );
+   return new Row(
+                children: <Widget>[
+                  new Text('1-3'),
+                  new Radio(
+                    value: "1-3",
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  ),
+                  new Text('4-7'),
+                  new Radio(
+                    value: "4-7",
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  ),
+                  new Text('8+'),
+                  new Radio(
+                    value: "8+",
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  )
+                ],
+              );
   }
+
 }

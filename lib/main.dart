@@ -18,6 +18,8 @@ Future<void> main() async {
   }).catchError((e)
   {
     print("Camera not initialized: "+e.toString());
+    cameraController.dispose();
+    cameraController.initialize();
   });
   runApp(new MyApp());
 }

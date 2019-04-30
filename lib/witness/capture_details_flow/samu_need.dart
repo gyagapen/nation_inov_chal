@@ -14,19 +14,69 @@ Future<Null> showSamuDialog(WitnessDetails witnessDetails,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
 
-      bool _radioValue = false;
 
-        void _handleRadioValueChange(bool value) {
-        //setState(() {});
-        _radioValue = value;}
 
       return new AlertDialog(
-        title: new Text('SAMU'),
+        title: new Text('Is SAMU needed ?'),
         content: new SingleChildScrollView(
           child: new ListBody(
             children: <Widget>[
-              new Text('SAMU is needed ?'),
-              new Row(
+              new SamuDialogContent(witnessDetails: witnessDetails,)
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+              child: new Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+                //callback(id);
+              }),
+          new FlatButton(
+              child: new Text('Next'),
+              onPressed: () {
+                Navigator.pop(context);
+                WitnessFlowManager.showWitnessNextStep(SAMU_DIALOG_ID, witnessDetails, context, id, callback);
+              }),
+        ],
+      );
+    },
+  );
+}
+
+class SamuDialogContent extends StatefulWidget {
+  SamuDialogContent({
+    Key key,
+    this.witnessDetails,
+  }): super(key: key);
+
+  WitnessDetails witnessDetails;
+
+  @override
+  _SamuDialogContentState createState() => new _SamuDialogContentState();
+}
+
+class _SamuDialogContentState extends State<SamuDialogContent> {
+  
+  bool _radioValue = false;
+
+  void _handleRadioValueChange(bool value) {
+      setState(() {
+        _radioValue = value;
+        widget.witnessDetails.isSAMUNeeded = _radioValue;
+      });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    widget.witnessDetails.isSAMUNeeded = _radioValue;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+   return new Row(
                 children: <Widget>[
                   new Text('Yes'),
                   new Radio(
@@ -41,26 +91,7 @@ Future<Null> showSamuDialog(WitnessDetails witnessDetails,
                     onChanged: _handleRadioValueChange,
                   )
                 ],
-              )
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              child: new Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context);
-                //callback(id);
-              }),
-          new FlatButton(
-              child: new Text('Next'),
-              onPressed: () {
-                witnessDetails.isSAMUNeeded = _radioValue;
-                Navigator.pop(context);
-                WitnessFlowManager.showWitnessNextStep(SAMU_DIALOG_ID, witnessDetails, context, id, callback);
-              }),
-        ],
-      );
-    },
-  );
+              );
+  }
 }
+
