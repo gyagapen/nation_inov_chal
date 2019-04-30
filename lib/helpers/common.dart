@@ -8,7 +8,6 @@ import '../notification_list.dart';
 import 'package:camera/camera.dart';
 
 //common variables
-String videoPath = "";
 List<CameraDescription> cameras;
 CameraController cameraController;
 bool isLocationSettingsOpened = false;

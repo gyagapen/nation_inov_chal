@@ -13,7 +13,12 @@ Future<void> main() async {
   //init cameras
   cameras = await availableCameras();
   cameraController =CameraController(cameras[0], ResolutionPreset.medium);
-  cameraController.initialize();
+  cameraController.initialize().then((v){
+    print("Camera initialized");
+  }).catchError((e)
+  {
+    print("Camera not initialized: "+e.toString());
+  });
   runApp(new MyApp());
 }
 
