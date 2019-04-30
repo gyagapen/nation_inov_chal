@@ -95,6 +95,7 @@ Future<Null> showVideoCaptureDialog(
 
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
+      print("Video temporaly saved to $videoPath");
       Fluttertoast.showToast(
           msg: 'Video recorded to $videoPath',
           toastLength: Toast.LENGTH_SHORT,
@@ -119,7 +120,7 @@ Future<Null> showVideoCaptureDialog(
         title: new Text('Sinister Details'),
         content:
         new Container(
-              height: 500,
+              height: 600,
               child:
         new Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
