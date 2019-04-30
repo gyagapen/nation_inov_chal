@@ -26,7 +26,12 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
 
       return new AlertDialog(
         title: new Text('Record a video'),
-        content: new VideoCaptureContent(witnessDetails: witnessDetails,)
+        content: 
+        new Container(
+              height: 600,
+              child:
+        new VideoCaptureContent(witnessDetails: witnessDetails,)
+        )
         ,
         actions: <Widget>[
           new FlatButton(
@@ -164,9 +169,7 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
 
   @override
   Widget build(BuildContext context) {
-   return new Container(
-              height: 600,
-              child:
+   return 
         new Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
@@ -191,7 +194,7 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
               ],
             )
           ],
-        ),
+        
         );
   }
 
