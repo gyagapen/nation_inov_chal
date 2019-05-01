@@ -9,7 +9,6 @@ import 'package:camera/camera.dart';
 
 //common variables
 List<CameraDescription> cameras;
-CameraController cameraController;
 bool isLocationSettingsOpened = false;
 String wsTechnicalError =
     "Cannot contact MauSafe servers. Kindly ensure that you are connected to internet";

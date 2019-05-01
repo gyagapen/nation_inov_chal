@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../models/witness_details.dart';
 import 'flow_manager.dart';
+import '../../helpers/utilities.dart';
 
 import 'package:mausafe_v0/models/trigger_event.dart';
 
@@ -84,15 +85,20 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
   String _videoPath = "";
   Timer _timer;
   bool _isRecording = false;
+  CameraController cameraController;
+  bool _cameraMounted = false;
 
   void onSecondRecorded(Timer t)
   {
-    setState(() {
-     _secondRecorded++; 
-    });
+    
     if(_secondRecorded == _maxAllowDuration){
       _stopVideoRecording();
       _timer.cancel();
+    } else if(_secondRecorded < _maxAllowDuration)
+    {
+        setState(() {
+      _secondRecorded++; 
+      });
     }
 
     
@@ -114,6 +120,10 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
 
   Future<String> _startVideoRecording() async {
     
+    if(_videoPath != "")
+    {
+      deleteFile(_videoPath);
+    }
     _videoPath = "";
     widget.witnessDetails.videoPath = "";
 
@@ -199,6 +209,7 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
       _isRecording = false;
+      _timer.cancel();
       print("Video temporaly saved to ${widget.witnessDetails.videoPath}");
       widget.witnessDetails.videoPath = _videoPath;
     });
@@ -209,13 +220,32 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
   @override
   void initState(){
     super.initState();
+    initCameraController();
 
   }
 
-  @override
-  Widget build(BuildContext context) {
-   return 
-        new Column(
+  Future<void> initCameraController() async{
+      cameraController = CameraController(cameras[0], ResolutionPreset.medium);
+      cameraController.initialize().then((v){
+        print("Camera initialized");
+        setState(() {
+          _cameraMounted = true;
+        });
+        
+      }).catchError((e)
+      {
+        print("Camera not initialized: "+e.toString());
+      });
+  }
+
+  Widget getCameraContent()
+  {
+    if(!_cameraMounted)
+    {
+      return new Container();
+    } else
+    {
+      return new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -227,10 +257,6 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
               child: CameraPreview(cameraController),
               ),
             ),
-            /*new FlatButton(
-              child: new Ic,
-              onPressed: _onCameraButtonPressed
-            ),*/
             new IconButton(
               icon: new Icon(_isRecording? Icons.stop : Icons.camera, color: Colors.red,),
               onPressed: _onCameraButtonPressed,
@@ -238,6 +264,13 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
           ],
         
         );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+   return getCameraContent();
+       
   }
 
 }
