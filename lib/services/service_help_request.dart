@@ -2,6 +2,11 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import '../models/service_provider.dart';
 import '../helpers/constants.dart';
+import '../models/witness_details.dart';
+import 'dart:convert';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+import 'dart:io';
 
 class ServiceHelpRequest {
   static String serviceBaseUrl = "http://aroma.mu/webservices/mausafe/index.php/";
@@ -20,6 +25,39 @@ class ServiceHelpRequest {
     return http.get(
         serviceBaseUrl + 'HelpRequest?device_id=' + deviceId + '&type=' + type,
         headers: generateHeaders());
+  }
+
+  static Future<http.Response> sendWitnessDetails(WitnessDetails witnessDetails) async {
+
+    // open a bytestream
+      var stream = new http.ByteStream(DelegatingStream.typed(witnessDetails.videoPath.openRead()));
+      // get file length
+      var length = await imageFile.length();
+
+      // string to uri
+      var uri = Uri.parse("http://ip:8082/composer/predict");
+
+      // create multipart request
+      var request = new http.MultipartRequest("POST", uri);
+
+      // multipart that takes file
+      var multipartFile = new http.MultipartFile('file', stream, length,
+          filename: basename(witnessDetails.videoPath));
+
+      // add file to multipart
+      request.files.add(multipartFile);
+
+      // send
+      var response = await request.send();
+      print(response.statusCode);
+
+      // listen for response
+      response.stream.transform(utf8.decoder).listen((value) {
+        print(value);
+      });
+   /* return http.get(
+        serviceBaseUrl + 'HelpRequest?device_id=' + deviceId + '&type=' + type,
+        headers: generateHeaders());**/
   }
 
   static void cancelHelpReauest(String helpRequestId, callback) async {
