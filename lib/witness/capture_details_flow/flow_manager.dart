@@ -9,6 +9,7 @@ import 'video_capture.dart';
 import 'floor_number.dart';
 import 'person_trapped.dart';
 import 'samu_need.dart';
+import '../../services/service_help_request.dart';
 
 class WitnessFlowManager{
 
@@ -51,6 +52,7 @@ class WitnessFlowManager{
           break;
            case VIDEO_CAPTURE_DIALOG_ID:{
               print("Flow is over");
+              callback(id, witnessDetails);
           }
           break;
 

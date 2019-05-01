@@ -210,8 +210,8 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
     _stopVideoRecording().then((_) {
       _isRecording = false;
       _timer.cancel();
-      print("Video temporaly saved to ${widget.witnessDetails.videoPath}");
       widget.witnessDetails.videoPath = _videoPath;
+      print("Video temporaly saved to ${widget.witnessDetails.videoPath}");
     });
   }
  

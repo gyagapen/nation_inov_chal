@@ -244,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage>
               WitnessFlowManager.showWitnessNextStep("", new WitnessDetails(), context, event, initHelpRequest);
             } else
             {
-                initHelpRequest(event);
+                initHelpRequest(event, null);
             }
           } else {
             //try to get location
@@ -377,7 +377,7 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
   }
 
-  void initHelpRequest(TriggerEvent event) {
+  void initHelpRequest(TriggerEvent event, WitnessDetails witnessDetails) {
     if (_progressHUD.state != null) {
       _progressHUD.state.show();
     }
@@ -389,8 +389,14 @@ class _MyHomePageState extends State<MyHomePage>
           myLocation.longitude.toStringAsPrecision(10),
           myLocation.latitude.toStringAsPrecision(10),
           event.serviceProviders,
-          event.name,
-          openTrackingPage);
+          event.name).then((response){
+              //upload video
+              ServiceHelpRequest.sendWitnessDetails(witnessDetails).then((v){
+                openTrackingPage(response, event.serviceProviders);
+              });
+          });
+
+          
     });
   }
 

@@ -9,8 +9,8 @@ import 'package:async/async.dart';
 import 'dart:io';
 
 class ServiceHelpRequest {
-  static String serviceBaseUrl = "http://aroma.mu/webservices/mausafe/index.php/";
-  //static String serviceBaseUrl = "http://192.168.0.101:8083/mausafe/index.php/";
+  //static String serviceBaseUrl = "http://aroma.mu/webservices/mausafe/index.php/";
+  static String serviceBaseUrl = "http://192.168.0.101:8083/mausafe/index.php/";
   static String apiKey = "58eb50e1-f87b-44a7-a4be-dcccd71625eb";
 
   static Map<String, String> generateHeaders() {
@@ -27,25 +27,35 @@ class ServiceHelpRequest {
         headers: generateHeaders());
   }
 
-  static Future<http.Response> sendWitnessDetails(WitnessDetails witnessDetails) async {
+  static Future<http.Response> sendWitnessDetails(int helpReqId, WitnessDetails witnessDetails) async {
 
-    // open a bytestream
-      var stream = new http.ByteStream(DelegatingStream.typed(witnessDetails.videoPath.openRead()));
+      //open file
+      var videoFile = new File(witnessDetails.videoPath);
+
+      // open a bytestream
+      var stream = new http.ByteStream(DelegatingStream.typed(videoFile.openRead()));
       // get file length
-      var length = await imageFile.length();
+      var length = await videoFile.length();
 
       // string to uri
-      var uri = Uri.parse("http://ip:8082/composer/predict");
+      var uri = Uri.parse(serviceBaseUrl + 'HelpRequest/video');
 
       // create multipart request
       var request = new http.MultipartRequest("POST", uri);
 
       // multipart that takes file
-      var multipartFile = new http.MultipartFile('file', stream, length,
+      var multipartFile = new http.MultipartFile('video', stream, length,
           filename: basename(witnessDetails.videoPath));
+
+      //add headers
+      request.headers.addAll(generateHeaders());
 
       // add file to multipart
       request.files.add(multipartFile);
+      Map<String, String> bodyRequest = new Map<String, String>();
+      bodyRequest["help_request_id"] = helpReqId.toString();
+
+      request.fields.addAll(bodyRequest);
 
       // send
       var response = await request.send();
@@ -55,9 +65,6 @@ class ServiceHelpRequest {
       response.stream.transform(utf8.decoder).listen((value) {
         print(value);
       });
-   /* return http.get(
-        serviceBaseUrl + 'HelpRequest?device_id=' + deviceId + '&type=' + type,
-        headers: generateHeaders());**/
   }
 
   static void cancelHelpReauest(String helpRequestId, callback) async {
@@ -92,13 +99,12 @@ class ServiceHelpRequest {
     });
   }
 
-  static void initiateHelpRequest(
+  static Future<void> initiateHelpRequest(
       String deviceId,
       String longitude,
       String latitude,
       List<ServiceProvider> providers,
-      String eventType,
-      callback) async {
+      String eventType) async {
     //build request body
     Map<String, String> bodyRequest = new Map<String, String>();
     bodyRequest["customer_name"] = customerName;
@@ -126,14 +132,17 @@ class ServiceHelpRequest {
 
     bodyRequest["provider_list"] = providerStrList;
 
-    http
+    return http.post(serviceBaseUrl + 'HelpRequest/initiate',
+        headers: generateHeaders(), body: bodyRequest);
+
+    /*http
         .post(serviceBaseUrl + 'HelpRequest/initiate',
             headers: generateHeaders(), body: bodyRequest)
         .then((response) {
       callback(response, providers);
     }).catchError((e) {
       callback(null, providers);
-    });
+    });*/
   }
 
   static Future<http.Response> getCircles(String deviceId) async {
