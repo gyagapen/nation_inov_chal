@@ -30,7 +30,7 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
         new Container(
               height: 600,
               child:
-        new VideoCaptureContent(witnessDetails: witnessDetails,)
+              new VideoCaptureContent(witnessDetails: witnessDetails,)
         )
         ,
         actions: <Widget>[
@@ -42,8 +42,21 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
           new FlatButton(
               child: new Text('Next'),
               onPressed: () {
-                Navigator.pop(context);
-                WitnessFlowManager.showWitnessNextStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
+                if(witnessDetails.videoPath != "")
+                {
+                  Navigator.pop(context);
+                  WitnessFlowManager.showWitnessNextStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
+                } else
+                {
+                  Fluttertoast.showToast(
+                  msg: 'You must capture a video',
+                  toastLength: Toast.LENGTH_LONG,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIos: 1,
+                  backgroundColor: Colors.grey,
+                  textColor: Colors.white
+        );
+                }
               }),
         ],
       );
@@ -66,6 +79,25 @@ class VideoCaptureContent extends StatefulWidget {
 
 class _VideoCaptureContentState extends State<VideoCaptureContent> {
 
+  int _secondRecorded = 0;
+  int _maxAllowDuration = 30;
+  String _videoPath = "";
+  Timer _timer;
+  bool _isRecording = false;
+
+  void onSecondRecorded(Timer t)
+  {
+    setState(() {
+     _secondRecorded++; 
+    });
+    if(_secondRecorded == _maxAllowDuration){
+      _stopVideoRecording();
+      _timer.cancel();
+    }
+
+    
+  }
+
   void _showCameraException(CameraException e) {
       String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
       print(errorText);
@@ -80,7 +112,11 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
       );
     }
 
-     Future<String> _startVideoRecording() async {
+  Future<String> _startVideoRecording() async {
+    
+    _videoPath = "";
+    widget.witnessDetails.videoPath = "";
+
     if (!cameraController.value.isInitialized) {
       Fluttertoast.showToast(
           msg: 'Please wait',
@@ -109,13 +145,27 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
  
     try {
       await cameraController.startVideoRecording(filePath);
-      widget.witnessDetails.videoPath = filePath;
+      _videoPath = filePath;
+      
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
  
+    //start timer
+    _timer = new Timer.periodic(new Duration(seconds: 1), onSecondRecorded);
+    _isRecording = true;
     return filePath;
+  }
+
+  void _onCameraButtonPressed(){
+    if(!_isRecording)
+    {
+      _onRecordButtonPressed();
+    } else
+    {
+      _onStopButtonPressed();
+    }
   }
 
   void _onRecordButtonPressed() {
@@ -139,7 +189,7 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
     }
  
     try {
-      await cameraController.stopVideoRecording();
+      await cameraController.stopVideoRecording();  
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -148,15 +198,9 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
 
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
+      _isRecording = false;
       print("Video temporaly saved to ${widget.witnessDetails.videoPath}");
-      Fluttertoast.showToast(
-          msg: 'Video recorded to ${widget.witnessDetails.videoPath}',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.grey,
-          textColor: Colors.white
-      );
+      widget.witnessDetails.videoPath = _videoPath;
     });
   }
  
@@ -165,15 +209,17 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
   @override
   void initState(){
     super.initState();
+
   }
 
   @override
   Widget build(BuildContext context) {
    return 
         new Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
+            new Text("$_secondRecorded/${_maxAllowDuration}s"),
             new Container(
               height: 500,
               child: new AspectRatio(
@@ -181,17 +227,13 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
               child: CameraPreview(cameraController),
               ),
             ),
-            new Row(
-              children: [
-                new FlatButton(
-                  child: new Text("Start Recording"),
-                  onPressed: _onRecordButtonPressed
-                ),
-                new FlatButton(
-                  child: new Text("Stop Recording"),
-                  onPressed: _onStopButtonPressed
-                )
-              ],
+            /*new FlatButton(
+              child: new Ic,
+              onPressed: _onCameraButtonPressed
+            ),*/
+            new IconButton(
+              icon: new Icon(_isRecording? Icons.stop : Icons.camera, color: Colors.red,),
+              onPressed: _onCameraButtonPressed,
             )
           ],
         
