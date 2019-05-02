@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import '../models/service_provider.dart';
@@ -99,12 +100,21 @@ class ServiceHelpRequest {
     });
   }
 
-  static Future<void> initiateHelpRequest(
+  static void initiateHelpRequest(
       String deviceId,
       String longitude,
       String latitude,
       List<ServiceProvider> providers,
-      String eventType) async {
+      String eventType, 
+      callback,
+      WitnessDetails witnessDetails) async {
+
+    // string to uri
+    var uri = Uri.parse(serviceBaseUrl + 'HelpRequest/initiate');
+    
+    // create multipart request
+    var request = new http.MultipartRequest("POST", uri);
+
     //build request body
     Map<String, String> bodyRequest = new Map<String, String>();
     bodyRequest["customer_name"] = customerName;
@@ -116,6 +126,30 @@ class ServiceHelpRequest {
     bodyRequest["latitude"] = latitude;
     bodyRequest["event_type"] = eventType;
     bodyRequest["nic"] = nic;
+    bodyRequest["is_witness"] = (witnessDetails == null) ? "0" : "1";
+
+    //witness details
+    if(witnessDetails != null)
+    {
+      bodyRequest["impact_type"] = witnessDetails.impactType;
+      bodyRequest["building_type"] = witnessDetails.buildingType;
+      bodyRequest["no_floors"] = witnessDetails.noOfFloors;
+      bodyRequest["samu_needed"] = witnessDetails.isSAMUNeeded ? "1" : "0";
+      bodyRequest["person_trapped"] = witnessDetails.isAPersonTrapped ? "1" : "0";  
+
+      //video processing
+      var videoFile = new File(witnessDetails.videoPath);
+      var stream = new http.ByteStream(DelegatingStream.typed(videoFile.openRead()));
+      var length = await videoFile.length();
+      // multipart that takes file
+      var multipartFile = new http.MultipartFile('video', stream, length,
+          filename: basename(witnessDetails.videoPath));
+
+      // add file to multipart
+      request.files.add(multipartFile);
+    }
+
+
 
     String providerStrList = "";
     for (int i = 0; i < providers.length; i++) {
@@ -132,8 +166,28 @@ class ServiceHelpRequest {
 
     bodyRequest["provider_list"] = providerStrList;
 
-    return http.post(serviceBaseUrl + 'HelpRequest/initiate',
-        headers: generateHeaders(), body: bodyRequest);
+    /*return http.post(serviceBaseUrl + 'HelpRequest/initiate',
+        headers: generateHeaders(), body: bodyRequest);*/
+
+    //add headers
+    request.headers.addAll(generateHeaders());
+
+    //add body
+    request.fields.addAll(bodyRequest);
+
+     // send
+    request.send().then((response){
+          //response
+          // listen for response
+          response.stream.transform(utf8.decoder).listen((value) {
+            callback(value, providers);
+          });
+    }).catchError((e)
+    {
+        callback(null, providers);
+    });
+
+      
 
     /*http
         .post(serviceBaseUrl + 'HelpRequest/initiate',

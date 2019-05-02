@@ -389,22 +389,22 @@ class _MyHomePageState extends State<MyHomePage>
           myLocation.longitude.toStringAsPrecision(10),
           myLocation.latitude.toStringAsPrecision(10),
           event.serviceProviders,
-          event.name).then((response){
-              //upload video
-              ServiceHelpRequest.sendWitnessDetails(witnessDetails).then((v){
-                openTrackingPage(response, event.serviceProviders);
-              });
-          });
+          event.name,
+          openTrackingPage,
+          witnessDetails);
 
           
     });
   }
 
   void openTrackingPage(
-      http.Response response, List<ServiceProvider> serviceProviders) {
+      //http.Response response, 
+      String response,
+      List<ServiceProvider> serviceProviders) {
     try {
-      if (response.statusCode == 200) {
-        Map<String, dynamic> decodedResponse = json.decode(response.body);
+      if(response != null){
+      //if (response.statusCode == 200) {
+        Map<String, dynamic> decodedResponse = json.decode(response);
         if (decodedResponse["status"] == true) {
           getPendingHelpRequestFromServer();
         } else {
