@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage>
 //initialise animation
   initState() {
     super.initState();
-
+    _isWitness = false;
     WidgetsBinding.instance.addObserver(this);
 
     //controller and animation for gps
@@ -219,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage>
           animation: animationSwitch,
         ),
         new Switch(
-          value: false,
+          value: _isWitness,
           onChanged: (value) {
             setState(() {
              _isWitness =value; 
@@ -239,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage>
         tooltip: event.name,
         onPressed: () {
           if (_currentLocation != null) {
-            if(_isWitness)
+            if(_isWitness && event.name == "Fireman")
             {
               WitnessFlowManager.showWitnessNextStep("", new WitnessDetails(), context, event, initHelpRequest);
             } else
@@ -382,6 +382,19 @@ class _MyHomePageState extends State<MyHomePage>
       _progressHUD.state.show();
     }
 
+      if(witnessDetails != null && witnessDetails.isSAMUNeeded) {
+        bool samuFound = false;
+        for (int i = 0; i < event.serviceProviders.length; i++) {
+          if (event.serviceProviders.elementAt(i).name == "SAMU") {
+              event.serviceProviders.elementAt(i).isOptional = false;
+              samuFound = true;
+          }
+        }
+        if(!samuFound)
+        {
+          event.serviceProviders.add(new ServiceProvider("SAMU"));
+        }
+      } 
     //initiate help request service
     getDeviceUID().then((uiD) {
       ServiceHelpRequest.initiateHelpRequest(
@@ -391,9 +404,7 @@ class _MyHomePageState extends State<MyHomePage>
           event.serviceProviders,
           event.name,
           openTrackingPage,
-          witnessDetails);
-
-          
+          witnessDetails);  
     });
   }
 

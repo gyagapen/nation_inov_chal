@@ -145,7 +145,7 @@ class _TrackingPageState extends State<TrackingPage>
       mainAxisSize: MainAxisSize.max,
       children: [
         new Container(
-          padding: new EdgeInsets.fromLTRB(75.0, 5.0, 20.0, 5.0),
+          padding: new EdgeInsets.fromLTRB(75.0, 5.0, 75.0, 5.0),
           child: new RaisedButton(
             textColor: Colors.black,
             child: new Text("Track".toUpperCase()),
@@ -155,7 +155,7 @@ class _TrackingPageState extends State<TrackingPage>
         new Container(
           padding: new EdgeInsets.fromLTRB(5.0, 5.0, 75.0, 5.0),
           child: new RaisedButton(
-            disabledColor: Colors.black,
+            textColor: Colors.white,
             child: new Text("Cancel".toUpperCase()),
             onPressed: () {
               showCancelSPRequestDialog(context, callCancelHelpRequestWs);

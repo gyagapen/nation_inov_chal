@@ -13,6 +13,7 @@ import '../../helpers/utilities.dart';
 import 'package:mausafe_v0/models/trigger_event.dart';
 
 const String VIDEO_CAPTURE_DIALOG_ID = "video_capture_dialog";
+CameraController cameraController;
 
 Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
     BuildContext context, TriggerEvent id, callback) async {
@@ -41,10 +42,14 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
                 Navigator.pop(context);
               }),
           new FlatButton(
-              child: new Text('Next'),
+              child: new Text('Complete'),
               onPressed: () {
                 if(witnessDetails.videoPath != "")
                 {
+                  if(cameraController != null)
+                  {
+                    cameraController.dispose();
+                  }
                   Navigator.pop(context);
                   WitnessFlowManager.showWitnessNextStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
                 } else
@@ -85,7 +90,6 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
   String _videoPath = "";
   Timer _timer;
   bool _isRecording = false;
-  CameraController cameraController;
   bool _cameraMounted = false;
 
   void onSecondRecorded(Timer t)
@@ -207,11 +211,15 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
   }
 
   void _onStopButtonPressed() {
+    
     _stopVideoRecording().then((_) {
-      _isRecording = false;
-      _timer.cancel();
+      setState(() {
+       _isRecording = false; 
+       _timer.cancel();
       widget.witnessDetails.videoPath = _videoPath;
       print("Video temporaly saved to ${widget.witnessDetails.videoPath}");
+      });
+      
     });
   }
  

@@ -11,7 +11,8 @@ import 'dart:io';
 
 class ServiceHelpRequest {
   //static String serviceBaseUrl = "http://aroma.mu/webservices/mausafe/index.php/";
-  static String serviceBaseUrl = "http://192.168.0.101:8083/mausafe/index.php/";
+  //static String serviceBaseUrl = "http://192.168.0.101:8083/mausafe/index.php/";
+  static String serviceBaseUrl = "http://10.19.3.49:8083/mausafe/index.php/";
   static String apiKey = "58eb50e1-f87b-44a7-a4be-dcccd71625eb";
 
   static Map<String, String> generateHeaders() {
@@ -178,10 +179,15 @@ class ServiceHelpRequest {
      // send
     request.send().then((response){
           //response
-          // listen for response
-          response.stream.transform(utf8.decoder).listen((value) {
-            callback(value, providers);
-          });
+          if(response.statusCode == 200)
+          {
+            response.stream.transform(utf8.decoder).listen((value) {
+              callback(value, providers);
+            }); 
+          } else
+          {
+             callback(null, providers);
+          }
     }).catchError((e)
     {
         callback(null, providers);

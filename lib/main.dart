@@ -5,10 +5,16 @@ import 'helpers/constants.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 import 'helpers/common.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   MapView.setApiKey(gmapsApiKey);
 
+  //block rotation
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+    .then((_) {
+      runApp(new MyApp());
+    });
 
   //init cameras
   cameras = await availableCameras();
