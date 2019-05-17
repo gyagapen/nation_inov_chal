@@ -56,7 +56,7 @@ class BuildingTypeDialogContent extends StatefulWidget {
 
 class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
   
-    List<String> _buildingTypes = ['Residential', 'Commercial', 'Industrial'];
+    //List<String> _buildingTypes = ['Residential', 'Commercial', 'Industrial'];
     String _selectedBuildingType = "Residential";
 
 
@@ -66,24 +66,81 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
     widget.witnessDetails.buildingType = _selectedBuildingType;
   }
 
+   void _handleRadioValueChange(String value) {
+      setState(() {
+        _selectedBuildingType = value;
+        widget.witnessDetails.buildingType = _selectedBuildingType;
+      });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
-   return new DropdownButton(
-      items: _buildingTypes.map((String val) {
-        return new DropdownMenuItem<String>(
-          value: val,
-          child: new Text(val),
-        );
-      }).toList(),
-      value: _selectedBuildingType,
-      onChanged: (newValue) {
-        setState(() {
-          _selectedBuildingType = newValue;
-          widget.witnessDetails.buildingType = _selectedBuildingType;
-        });
-      },
-    );
+
+    return 
+    new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                new ImageIcon(new AssetImage("images/witness/Residential.png"), size: 30.0,),
+                new Container(
+                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
+                  child: new Text("Residential"),
+                ),
+                new Radio(
+                    value: "Residential",
+                    groupValue: _selectedBuildingType,
+                    onChanged: _handleRadioValueChange,
+                  )
+              ],
+            ),
+             new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                new ImageIcon(new AssetImage("images/witness/Commercial.png"), size: 30.0,),
+                new Container(
+                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
+                  child: new Text("Commercial"),
+                ),
+                new Radio(
+                    value: "Commercial",
+                    groupValue: _selectedBuildingType,
+                    onChanged: _handleRadioValueChange,
+                  )
+              ],
+            ),
+              new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  new ImageIcon(new AssetImage("images/witness/industrial.png"), size: 30.0,),
+                  new Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                    child: new Text("Industrial"),
+                  ),
+                  new Radio(
+                      value: "Industrial",
+                      groupValue: _selectedBuildingType,
+                      onChanged: _handleRadioValueChange,
+                    )
+              ],
+            )
+          ],
+        ),
+    
+    
+      ]
+      );
   }
 }
 

@@ -59,7 +59,7 @@ class SinisterDialogContent extends StatefulWidget {
 
 class _SinisterDialogContentState extends State<SinisterDialogContent> {
   
-  List<String> _sinisterTypes = ['Building', 'Field', 'Vehicle', 'Rubbish'];
+  //List<String> _sinisterTypes = ['Building', 'Field', 'Vehicle', 'Rubbish'];
   String _selectedSinisterType = "Building";
 
 
@@ -69,10 +69,17 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
     widget.witnessDetails.impactType = _selectedSinisterType;
   }
 
+  void _handleRadioValueChange(String value) {
+      setState(() {
+        _selectedSinisterType = value;
+        widget.witnessDetails.impactType = _selectedSinisterType;
+      });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-   return new DropdownButton(
+   /*return new DropdownButton(
       items: _sinisterTypes.map((String val) {
         return new DropdownMenuItem<String>(
           value: val,
@@ -86,6 +93,92 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
           widget.witnessDetails.impactType = _selectedSinisterType;
         });
       },
-    );
+    );*/
+
+     return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                new ImageIcon(new AssetImage("images/witness/Building_fire.png"), size: 30.0,),
+                new Container(
+                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
+                  child: new Text("Building"),
+                ),
+                new Radio(
+                    value: "Building",
+                    groupValue: _selectedSinisterType,
+                    onChanged: _handleRadioValueChange,
+                  )
+              ],
+            ),
+             new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                new ImageIcon(new AssetImage("images/witness/forest_fire.png"), size: 30.0,),
+                new Container(
+                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
+                  child: new Text("Field"),
+                ),
+                new Radio(
+                    value: "Field",
+                    groupValue: _selectedSinisterType,
+                    onChanged: _handleRadioValueChange,
+                  )
+              ],
+            ),
+             
+          ],
+        ),
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+               new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  new ImageIcon(new AssetImage("images/witness/car_fire.jpg"), size: 30.0,),
+                  new Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
+                    child: new Text("Vehicle"),
+                  ),
+                  new Radio(
+                      value: "Vehicle",
+                      groupValue: _selectedSinisterType,
+                      onChanged: _handleRadioValueChange,
+                    )
+                ],
+              ),
+              new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  new ImageIcon(new AssetImage("images/witness/Residential.png"), size: 30.0,),
+                  new Container(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                    child: new Text("Rubbish"),
+                  ),
+                  new Radio(
+                      value: "Rubbish",
+                      groupValue: _selectedSinisterType,
+                      onChanged: _handleRadioValueChange,
+                    )
+                ],
+              )
+          ]
+        ),
+    
+    
+      ]
+      );
   }
 }

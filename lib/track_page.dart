@@ -140,12 +140,15 @@ class _TrackingPageState extends State<TrackingPage>
       return spCards;
     }
 
-    var actionButtons = new Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
+    
+
+    var actionButtons =
+        new Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       children: [
         new Container(
-          padding: new EdgeInsets.fromLTRB(75.0, 5.0, 75.0, 5.0),
+          padding: new EdgeInsets.fromLTRB(60.0, 5.0, 70.0, 5.0),
           child: new RaisedButton(
             textColor: Colors.black,
             child: new Text("Track".toUpperCase()),
@@ -164,6 +167,7 @@ class _TrackingPageState extends State<TrackingPage>
         ),
       ],
     );
+
 
     //initialise main column
     mainColumn = ListView(

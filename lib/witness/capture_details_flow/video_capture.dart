@@ -24,15 +24,19 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
 
+      double windowHeight = MediaQuery.of(context).size.height;
+      double windowWidth = MediaQuery.of(context).size.width;
       
 
       return new AlertDialog(
         title: new Text('Record a video'),
         content: 
         new Container(
-              height: 600,
+              height: windowHeight*0.8,
               child:
-              new VideoCaptureContent(witnessDetails: witnessDetails,)
+              new VideoCaptureContent(witnessDetails: witnessDetails,
+                                        windowHeight: windowHeight,
+                                        windowWidth: windowWidth,)
         )
         ,
         actions: <Widget>[
@@ -75,9 +79,13 @@ class VideoCaptureContent extends StatefulWidget {
   VideoCaptureContent({
     Key key,
     this.witnessDetails,
+    this.windowHeight,
+    this.windowWidth
   }): super(key: key);
 
   WitnessDetails witnessDetails;
+  double windowHeight;
+  double windowWidth;
 
   @override
   _VideoCaptureContentState createState() => new _VideoCaptureContentState();
@@ -166,6 +174,10 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
       return null;
     }
  
+    setState(() {
+     _secondRecorded  = 0;
+    });
+
     //start timer
     _timer = new Timer.periodic(new Duration(seconds: 1), onSecondRecorded);
     _isRecording = true;
@@ -259,7 +271,7 @@ class _VideoCaptureContentState extends State<VideoCaptureContent> {
           children: [
             new Text("$_secondRecorded/${_maxAllowDuration}s"),
             new Container(
-              height: 500,
+              height: widget.windowHeight*0.54,
               child: new AspectRatio(
               aspectRatio: cameraController.value.aspectRatio,
               child: CameraPreview(cameraController),
