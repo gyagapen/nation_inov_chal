@@ -26,10 +26,10 @@ Future<Null> showFloorNumberDialog(WitnessDetails witnessDetails,
         ),
         actions: <Widget>[
           new FlatButton(
-              child: new Text('Cancel'),
+              child: new Text('Back'),
               onPressed: () {
                 Navigator.pop(context);
-                //callback(id);
+                WitnessFlowManager.showWitnessPreviousStep(FLOOR_NUMBER_DIALOG_ID, witnessDetails, context, id, callback);
               }),
           new FlatButton(
               child: new Text('Next'),

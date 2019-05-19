@@ -43,10 +43,6 @@ class WitnessFlowManager{
             }
           break;
           case SAMU_DIALOG_ID:{
-              showPersonTrappedDialog(witnessDetails, context, id, callback);
-            }
-          break;
-          case PERSON_TRAPPED_DIALOG_ID:{
               showVideoCaptureDialog(witnessDetails, context, id, callback);
           }
           break;
@@ -58,5 +54,49 @@ class WitnessFlowManager{
 
 
       }
+
+
+  }
+
+  static showWitnessPreviousStep(String currentStep, WitnessDetails witnessDetails,
+  BuildContext context, TriggerEvent id, callback)
+  {
+      switch(currentStep)
+      {
+
+          case BUILDING_TYPE_DIALOG_ID:{
+              showSinisterTypeDialog(witnessDetails, context, id, callback);
+            }
+          break;
+          case FLOOR_NUMBER_DIALOG_ID:{
+              showBuildingTypeDialog(witnessDetails, context, id, callback);
+            }
+          break;
+          case SAMU_DIALOG_ID:{
+              if(witnessDetails.impactType == "Building") {
+                showFloorNumberDialog(witnessDetails, context, id, callback);
+              }
+              else{
+                showSinisterTypeDialog(witnessDetails, context, id, callback);
+              }
+              
+            }
+          break;
+           case VIDEO_CAPTURE_DIALOG_ID:{
+            if(witnessDetails.impactType == "Building") {
+              showSamuDialog(witnessDetails, context, id, callback);
+            }
+            else if(witnessDetails.impactType == "Vehicle"){
+              showPersonTrappedDialog(witnessDetails, context, id, callback);
+            }
+            else {
+              showSinisterTypeDialog(witnessDetails, context, id, callback);
+            }
+          }
+          break;
+
+
+      }
+
   }
 }

@@ -30,7 +30,7 @@ Future<Null> showSinisterTypeDialog(WitnessDetails witnessDetails,
               child: new Text('Cancel'),
               onPressed: () {
                 Navigator.pop(context);
-                //callback(id);
+                WitnessFlowManager.showWitnessPreviousStep(SINISTER_TYPE_DIALOG_ID, witnessDetails, context, id, callback);
               }),
           new FlatButton(
               child: new Text('Next'),
@@ -59,9 +59,10 @@ class SinisterDialogContent extends StatefulWidget {
 
 class _SinisterDialogContentState extends State<SinisterDialogContent> {
   
-  //List<String> _sinisterTypes = ['Building', 'Field', 'Vehicle', 'Rubbish'];
   String _selectedSinisterType = "Building";
 
+  double iconWidth = 30.0;
+  double iconHeight = 30.0;
 
   @override
   void initState(){
@@ -79,21 +80,6 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
 
   @override
   Widget build(BuildContext context) {
-   /*return new DropdownButton(
-      items: _sinisterTypes.map((String val) {
-        return new DropdownMenuItem<String>(
-          value: val,
-          child: new Text(val),
-        );
-      }).toList(),
-      value: _selectedSinisterType,
-      onChanged: (newValue) {
-        setState(() {
-          _selectedSinisterType = newValue; 
-          widget.witnessDetails.impactType = _selectedSinisterType;
-        });
-      },
-    );*/
 
      return new Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -107,7 +93,7 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                new ImageIcon(new AssetImage("images/witness/Building_fire.png"), size: 30.0,),
+                Image.asset("images/witness/Building_fire.png", height: iconHeight, width: iconWidth,),
                 new Container(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
                   child: new Text("Building"),
@@ -123,7 +109,7 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                new ImageIcon(new AssetImage("images/witness/forest_fire.png"), size: 30.0,),
+                Image.asset("images/witness/forest_fire.png", height: iconHeight, width: iconWidth,),
                 new Container(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
                   child: new Text("Field"),
@@ -146,7 +132,7 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  new ImageIcon(new AssetImage("images/witness/car_fire.jpg"), size: 30.0,),
+                  Image.asset("images/witness/car_fire.png", height: iconHeight, width: iconWidth,),
                   new Container(
                     padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
                     child: new Text("Vehicle"),
@@ -162,7 +148,7 @@ class _SinisterDialogContentState extends State<SinisterDialogContent> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  new ImageIcon(new AssetImage("images/witness/Residential.png"), size: 30.0,),
+                  Image.asset("images/witness/Residential.png", height: iconHeight, width: iconWidth,),
                   new Container(
                     padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                     child: new Text("Rubbish"),

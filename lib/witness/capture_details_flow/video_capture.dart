@@ -41,9 +41,10 @@ Future<Null> showVideoCaptureDialog(WitnessDetails witnessDetails,
         ,
         actions: <Widget>[
           new FlatButton(
-              child: new Text('Cancel'),
+              child: new Text('Back'),
               onPressed: () {
                 Navigator.pop(context);
+                WitnessFlowManager.showWitnessPreviousStep(VIDEO_CAPTURE_DIALOG_ID, witnessDetails, context, id, callback);
               }),
           new FlatButton(
               child: new Text('Complete'),

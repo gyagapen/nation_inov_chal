@@ -12,7 +12,7 @@ class AnimatedWitnessSwitch extends AnimatedWidget {
     var iconContainer = new AnimatedOpacity(
       opacity: animation.value > 40 ? 1.0 : 0.0,
       duration: new Duration(milliseconds: 500),
-      child: new Icon(Icons.remove_red_eye),
+      child: Image.asset("images/eye.png", width: 35.0,height: 30.0,),
     );
 
     return iconContainer;

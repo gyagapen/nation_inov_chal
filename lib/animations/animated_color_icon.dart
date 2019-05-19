@@ -10,7 +10,7 @@ class AnimatedColorIcon extends AnimatedWidget {
       this.color2})
       : super(key: key, listenable: animation);
 
-  final AssetImage iconImage;
+  final String iconImage;
   final Color color1;
   final Color color2;
 
@@ -20,7 +20,7 @@ class AnimatedColorIcon extends AnimatedWidget {
     var animatedIcon = new AnimatedOpacity(
       opacity: 1.0,
       duration: new Duration(milliseconds: 500),
-      child: new ImageIcon(iconImage, color: animation.value > 50 ? color1 : color2,),
+      child: new ImageIcon(new AssetImage(iconImage), color: animation.value > 50 ? color1 : color2,),
     );
     return animatedIcon;
   }

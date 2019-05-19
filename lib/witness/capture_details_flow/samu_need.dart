@@ -17,20 +17,25 @@ Future<Null> showSamuDialog(WitnessDetails witnessDetails,
 
 
       return new AlertDialog(
-        title: new Text('Is SAMU needed ?'),
+        title: new Text('Is SAMU needed ?', style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
         content: new SingleChildScrollView(
           child: new ListBody(
             children: <Widget>[
-              new SamuDialogContent(witnessDetails: witnessDetails,)
+              new SamuDialogContent(witnessDetails: witnessDetails,),
+              new Container(
+                margin: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                child: new Text('Is a person trapped?', style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              ),
+              new PersonTrappedDialogContent(witnessDetails: witnessDetails,)
             ],
           ),
         ),
         actions: <Widget>[
           new FlatButton(
-              child: new Text('Cancel'),
+              child: new Text('Back'),
               onPressed: () {
                 Navigator.pop(context);
-                //callback(id);
+                WitnessFlowManager.showWitnessPreviousStep(SAMU_DIALOG_ID, witnessDetails, context, id, callback);
               }),
           new FlatButton(
               child: new Text('Next'),
@@ -94,4 +99,57 @@ class _SamuDialogContentState extends State<SamuDialogContent> {
               );
   }
 }
+
+
+class PersonTrappedDialogContent extends StatefulWidget {
+  PersonTrappedDialogContent({
+    Key key,
+    this.witnessDetails,
+  }): super(key: key);
+
+  WitnessDetails witnessDetails;
+
+  @override
+  _PersonTrappedDialogContentState createState() => new _PersonTrappedDialogContentState();
+}
+
+class _PersonTrappedDialogContentState extends State<PersonTrappedDialogContent> {
+  
+  bool _radioValue = false;
+
+  void _handleRadioValueChange(bool value) {
+      setState(() {
+        _radioValue = value;
+        widget.witnessDetails.isAPersonTrapped = _radioValue;
+      });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    widget.witnessDetails.isAPersonTrapped = _radioValue;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+   return new Row(
+                children: <Widget>[
+                  new Text('Yes'),
+                  new Radio(
+                    value: true,
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  ),
+                  new Text('No'),
+                  new Radio(
+                    value: false,
+                    groupValue: _radioValue,
+                    onChanged: _handleRadioValueChange,
+                  )
+                ],
+              );
+  }
+}
+
 

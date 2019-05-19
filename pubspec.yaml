@@ -80,6 +80,8 @@ flutter:
   - images/witness/Building_fire.png
   - images/witness/car_fire.jpg
   - images/witness/forest_fire.png
+  - images/hospital.png
+  - images/eye.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

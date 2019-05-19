@@ -231,12 +231,32 @@ class _MyHomePageState extends State<MyHomePage>
 
     //triggered button
     Widget generateEventIconButton(TriggerEvent event) {
-      var iconButton = new IconButton(
+      /*var iconButton = new IconButton(
         //icon: new Icon(sp.iconInfo.iconData),
         icon: ImageIcon(event.icon.iconImage),
         iconSize: 65.0,
         color: event.icon.iconColor,
         tooltip: event.name,
+        onPressed: () {
+          if (_currentLocation != null) {
+            if(_isWitness && event.name == "Fireman")
+            {
+              WitnessFlowManager.showWitnessNextStep("", new WitnessDetails(), context, event, initHelpRequest);
+            } else
+            {
+                initHelpRequest(event, null);
+            }
+          } else {
+            //try to get location
+            getLocalisation(context);
+          }
+        },
+      );*/
+
+
+      var iconButton = new FlatButton(
+        //icon: new Icon(sp.iconInfo.iconData),
+        child: Image.asset(event.icon.iconImage, width: 65.0, height: 65.0,),
         onPressed: () {
           if (_currentLocation != null) {
             if(_isWitness && event.name == "Fireman")

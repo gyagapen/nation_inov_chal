@@ -18,27 +18,27 @@ class ServiceProvider {
 
     switch (this.name) {
       case "Police":
-        this.iconInfo.iconImage = new AssetImage("images/policeman.png");
+        this.iconInfo.iconImage = "images/policeman.png";
         this.iconInfo.iconColor = Colors.blue[500];
         this.iconInfo.highlightColor1 = Colors.red;
         this.iconInfo.highlightColor2 = Colors.blue;
         break;
       case "SAMU":
-        this.iconInfo.iconImage = new AssetImage("images/health.png");
+        this.iconInfo.iconImage = "images/hospital.png";
         this.iconInfo.iconColor = Colors.red[500];
         this.iconInfo.highlightColor1 = Colors.red;
         this.iconInfo.highlightColor2 = Colors.black;
         trackingImage = "images/ambulance.png";
         break;
       case "Fireman":
-        this.iconInfo.iconImage = new AssetImage("images/fireman.png");
+        this.iconInfo.iconImage = "images/fireman.png";
         this.iconInfo.iconColor = Colors.orange[500];
         this.iconInfo.highlightColor1 = Colors.orange;
         this.iconInfo.highlightColor2 = Colors.black;
         trackingImage = "images/firetruck.png";
         break;
       case "Coast Guard":
-        this.iconInfo.iconImage = new AssetImage("images/coastguard.png");
+        this.iconInfo.iconImage = "images/coastguard.png";
         this.iconInfo.iconColor = Colors.green[500];
         this.iconInfo.highlightColor1 = Colors.green;
         this.iconInfo.highlightColor2 = Colors.black;
@@ -93,7 +93,7 @@ class ServiceProviderStatus {
 }
 
 class ServiceProviderIcon {
-  AssetImage iconImage;
+  String iconImage;
   Color iconColor;
   Color highlightColor1 = Colors.black;
   Color highlightColor2 = Colors.black;

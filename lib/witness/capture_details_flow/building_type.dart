@@ -25,9 +25,10 @@ Future<Null> showBuildingTypeDialog(WitnessDetails witnessDetails,
         ),
         actions: <Widget>[
           new FlatButton(
-              child: new Text('Cancel'),
+              child: new Text('Back'),
               onPressed: () {
                 Navigator.pop(context);
+                WitnessFlowManager.showWitnessPreviousStep(BUILDING_TYPE_DIALOG_ID, witnessDetails, context, id, callback);
               }),
           new FlatButton(
               child: new Text('Next'),
@@ -56,9 +57,9 @@ class BuildingTypeDialogContent extends StatefulWidget {
 
 class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
   
-    //List<String> _buildingTypes = ['Residential', 'Commercial', 'Industrial'];
-    String _selectedBuildingType = "Residential";
-
+  String _selectedBuildingType = "Residential";
+  double iconWidth = 30.0;
+  double iconHeight = 30.0;
 
   @override
   void initState(){
@@ -91,7 +92,7 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                new ImageIcon(new AssetImage("images/witness/Residential.png"), size: 30.0,),
+                Image.asset("images/witness/Residential.png", height: iconHeight, width: iconWidth,),
                 new Container(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
                   child: new Text("Residential"),
@@ -107,7 +108,7 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                new ImageIcon(new AssetImage("images/witness/Commercial.png"), size: 30.0,),
+                Image.asset("images/witness/Commercial.png", height: iconHeight, width: iconWidth,),
                 new Container(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
                   child: new Text("Commercial"),
@@ -123,7 +124,7 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  new ImageIcon(new AssetImage("images/witness/industrial.png"), size: 30.0,),
+                  Image.asset("images/witness/industrial.png", height: iconHeight, width: iconWidth,),
                   new Container(
                     padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
                     child: new Text("Industrial"),
