@@ -60,6 +60,7 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
   String _selectedBuildingType = "Residential";
   double iconWidth = 30.0;
   double iconHeight = 30.0;
+  double textSize = 15.0;
 
   @override
   void initState(){
@@ -94,8 +95,8 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
               children: [
                 Image.asset("images/witness/Residential.png", height: iconHeight, width: iconWidth,),
                 new Container(
-                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
-                  child: new Text("Residential"),
+                  padding: EdgeInsets.fromLTRB(0.0, 5.0, 5.0, 0.0),
+                  child: new Text("Residential", style: new TextStyle(fontSize: textSize),),
                 ),
                 new Radio(
                     value: "Residential",
@@ -110,8 +111,8 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
               children: [
                 Image.asset("images/witness/Commercial.png", height: iconHeight, width: iconWidth,),
                 new Container(
-                  padding: EdgeInsets.fromLTRB(0.0, 10.0, 5.0, 0.0),
-                  child: new Text("Commercial"),
+                  padding: EdgeInsets.fromLTRB(0.0, 5.0, 5.0, 0.0),
+                  child: new Text("Commercial",style: new TextStyle(fontSize: textSize)),
                 ),
                 new Radio(
                     value: "Commercial",
@@ -126,8 +127,8 @@ class _BuildingTypeDialogContentState extends State<BuildingTypeDialogContent> {
                 children: [
                   Image.asset("images/witness/industrial.png", height: iconHeight, width: iconWidth,),
                   new Container(
-                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                    child: new Text("Industrial"),
+                    padding: EdgeInsets.fromLTRB(0.0, 5.0, 0.0, 0.0),
+                    child: new Text("Industrial", style: new TextStyle(fontSize: textSize)),
                   ),
                   new Radio(
                       value: "Industrial",
