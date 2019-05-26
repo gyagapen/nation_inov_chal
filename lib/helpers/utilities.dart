@@ -9,6 +9,12 @@ bool isNumeric(String s) {
 
 void deleteFile(String filePath)
 {
-  var dir = new Directory(filePath);
-  dir.deleteSync(recursive: true);
+  try{
+    if(filePath != ""){
+      var dir = new Directory(filePath);
+      dir.deleteSync(recursive: true);
+    }
+  } catch(ex){
+    
+  }
 }

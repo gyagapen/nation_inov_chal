@@ -183,16 +183,18 @@ class ServiceHelpRequest {
           if(response.statusCode == 200)
           {
             response.stream.transform(utf8.decoder).listen((value) {
-              //delete video
-              deleteFile(witnessDetails.videoPath);
-
+              //delete video if any
+              if(witnessDetails != null){
+                deleteFile(witnessDetails.videoPath);
+              }
               callback(value, providers);
             }); 
           } else
           {
-            //delete video
-            deleteFile(witnessDetails.videoPath);
-
+            if(witnessDetails != null){
+              //delete video
+              deleteFile(witnessDetails.videoPath);
+            }
             callback(null, providers);
           }
 
