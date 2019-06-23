@@ -36,8 +36,10 @@ class _CirclePageState extends State<CirclePage> {
       loading: false,
     );
 
+
     populateCircleList();
   }
+
 
   //build main widget
   Widget build(BuildContext context) {
@@ -54,10 +56,15 @@ class _CirclePageState extends State<CirclePage> {
       );
 
       return new ListTile(
-        title: new Text(circleModel.name),
-        subtitle: new Text(circleModel.number),
+        title:  new Text(circleModel.name),
+        subtitle: 
+        new Container(
+          child: new Text(circleModel.number),
+        ),
         leading: avatarCircle,
-        trailing: new Column(
+        trailing:  new Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             new IconButton(
               icon: new Icon(Icons.edit),
@@ -79,7 +86,7 @@ class _CirclePageState extends State<CirclePage> {
               },
             ),
           ],
-        ),
+          ),
       );
     }
 
@@ -95,6 +102,7 @@ class _CirclePageState extends State<CirclePage> {
       }
 
       return new ListView(
+        shrinkWrap: true,
         children: listTiles,
       );
     }

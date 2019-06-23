@@ -119,6 +119,22 @@ class _MyHomePageState extends State<MyHomePage>
         callbackWsGetExistingHelpReq, "UID", "");
   }
 
+  
+// user defined function
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Please wait..."),
+          content: new Text("Information is being sent"),
+        );
+      },
+    );
+  }
+
   void callbackWsGetExistingHelpReq(HelpRequest helpRequest, Exception e) {
     if (_progressHUD.state != null) {
       _progressHUD.state.dismiss();
@@ -398,9 +414,10 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void initHelpRequest(TriggerEvent event, WitnessDetails witnessDetails) {
-    if (_progressHUD.state != null) {
+    /*if (_progressHUD.state != null) {
       _progressHUD.state.show();
-    }
+    }*/
+      _showDialog();
 
       if(witnessDetails != null && witnessDetails.isSAMUNeeded) {
         bool samuFound = false;
